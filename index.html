@@ -38,10 +38,6 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to the puzzle maker</a>
-  <header class="site-header">
-    <div class="logo" aria-hidden="true">N</div>
-    <p class="site-title">Name Puzzle Maker</p>
-  </header>
 
   <main id="main">
     <section class="intro" aria-labelledby="page-title">
@@ -107,11 +103,11 @@
         </fieldset>
 
         <details class="advanced" id="advanced">
-          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 0.3 · 8 / 5 mm · chamfers</span></summary>
+          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 2 · 8 / 5 mm · chamfers</span></summary>
           <div class="adv-grid">
             <div class="mini">
               <label for="fit_clearance">Fit clearance (mm per side)</label>
-              <input id="fit_clearance" data-param type="number" inputmode="decimal" min="0.1" max="0.6" step="0.05" value="0.3" aria-describedby="note-fit_clearance fit-hint">
+              <input id="fit_clearance" data-param type="number" inputmode="decimal" min="0.1" max="3" step="0.05" value="2" aria-describedby="note-fit_clearance fit-hint">
               <p class="clamp-note" id="note-fit_clearance" hidden></p>
             </div>
             <div class="mini">
@@ -136,11 +132,11 @@
             </div>
             <div class="mini">
               <label for="letter_chamfer">Letter edge chamfer (mm)</label>
-              <input id="letter_chamfer" data-param type="number" inputmode="decimal" min="0" max="1" step="0.1" value="0.6" aria-describedby="note-letter_chamfer">
+              <input id="letter_chamfer" data-param type="number" inputmode="decimal" min="0" max="1" step="0.1" value="1" aria-describedby="note-letter_chamfer">
               <p class="clamp-note" id="note-letter_chamfer" hidden></p>
             </div>
           </div>
-          <p class="hint" id="fit-hint">Tight fit 0.2 · default 0.3 · loose 0.4 mm</p>
+          <p class="hint" id="fit-hint">Default 2 mm: roomy, easy for small hands. For a snug fit use 0.2 · slip fit 0.3 · loose 0.4 mm</p>
           <button type="button" class="link-btn" id="reset-advanced">Reset defaults</button>
         </details>
 

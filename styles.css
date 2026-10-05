@@ -81,17 +81,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible, canvas:focus-visib
 }
 
 /* ------------------------------------------------------------- header */
-.site-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 18px var(--pad-x);
-  border-bottom: 1px solid var(--line);
-}
-.logo {
-  width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: #fff;
-  display: grid; place-items: center; font: 700 22px/1 var(--word);
-}
-.site-title { font: 600 18px/1.2 var(--ui); }
-
 .intro {
   display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
   padding: 32px var(--pad-x) 0;

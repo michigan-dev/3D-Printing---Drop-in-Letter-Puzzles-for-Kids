@@ -10,8 +10,8 @@ const $ = (id) => document.getElementById(id);
 const form = $('controls');
 const ADV_KEYS = ['fit_clearance', 'letter_thickness', 'pocket_depth', 'corner_chamfer', 'edge_chamfer', 'letter_chamfer'];
 const EXAMPLE_NAME = 'Emma';
-// Darker letter shades for text on light backgrounds (AA for large text).
-const TEXT_COLORS = ['#af5742', '#946d00', '#17895b', '#007eb0', '#8560ac'];
+// Darker shade of the letter blue for text on light backgrounds (AA for large text).
+const TEXT_COLORS = ['#007eb0'];
 
 const state = {
   job: null, // live job for the current inputs (no .scad)
