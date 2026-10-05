@@ -60,12 +60,17 @@ def validate_case(meta_path):
     for n in meta["notes"]:
         print(f"   note: {n}")
     total_bodies = 0
+    separate_bodies = []
     base_mesh = None
     base_plate = None
-    for plate in meta["plates"]:
+    # the normal plates, then the "two colours" plates (base alone / letters alone); same checks for both
+    for plate, primary in [(pl, True) for pl in meta["plates"]] + [(pl, False) for pl in meta.get("separate", [])]:
         mesh = trimesh.load(OUT / plate["file"], force="mesh")
         bodies = mesh.split(only_watertight=False)
-        total_bodies += len(bodies)
+        if primary:
+            total_bodies += len(bodies)
+        else:
+            separate_bodies.append((plate, len(bodies)))
         degenerate = int((mesh.area_faces < 1e-9).sum())
         check(degenerate == 0, f"{plate['file']}: {degenerate} zero-area faces")
         bounds2d = []
@@ -79,7 +84,7 @@ def validate_case(meta_path):
             check(lo[0] >= -1e-4 and lo[1] >= -1e-4 and hi[0] <= bed["width"] + 1e-4 and hi[1] <= bed["depth"] + 1e-4,
                   f"{tag}: outside bed {bed['width']}x{bed['depth']}: {lo[:2]}..{hi[:2]}")
             bounds2d.append((lo, hi))
-            if base_mesh is None or b.volume > base_mesh.volume:
+            if primary and (base_mesh is None or b.volume > base_mesh.volume):
                 base_mesh, base_plate = b, plate
         # spacing between bodies (bounding boxes at least part_spacing apart => no overlap);
         # 0.005 mm tolerance because STL stores float32 coordinates
@@ -95,6 +100,13 @@ def validate_case(meta_path):
         print(f"   {plate['file']}: {len(bodies)} bodies, all watertight={all(b.is_watertight for b in bodies)}, "
               f"zero-area faces={degenerate}, min Z={min(b.bounds[0][2] for b in bodies):.4f}, "
               f"min gap between parts={min_gap:.2f} mm, bed {bed['width']}x{bed['depth']}")
+    if meta.get("separate"):
+        base_counts = [n for pl, n in separate_bodies if pl["hasBase"]]
+        letter_counts = [n for pl, n in separate_bodies if not pl["hasBase"]]
+        check(base_counts == [1], f"two-colour base plate should hold exactly 1 body, found {base_counts}")
+        check(sum(letter_counts) == len(meta["letters"]), f"two-colour letter plates hold {sum(letter_counts)} bodies, expected {len(meta['letters'])}")
+        print(f"   two-colour downloads: {', '.join(pl['file'] for pl, _ in separate_bodies)} "
+              f"(base alone: {base_counts[0] if base_counts else 0} body, letters: {sum(letter_counts)} bodies)")
     expected_bodies = 1 + len(meta["letters"])
     check(total_bodies == expected_bodies, f"expected {expected_bodies} bodies (base + letters), found {total_bodies}")
 
@@ -115,7 +127,7 @@ def validate_case(meta_path):
           f"({w / 25.4:.2f} x {d / 25.4:.2f} in) -> {'OK' if ok else 'MISMATCH'}")
 
     # ---- margins and walls, measured on the assembled base (not rotated)
-    asm = trimesh.load(OUT / f"name-puzzle-{meta['text'].lower()}-assembled.stl", force="mesh")
+    asm = trimesh.load(OUT / f"{meta['stem']}-assembled.stl", force="mesh")
     base = max(asm.split(only_watertight=False), key=lambda b: b.extents[0] * b.extents[1])
     z = p["base_thickness"] - 0.0005
     top = section_polygons(base, z)
@@ -145,7 +157,7 @@ def validate_case(meta_path):
 
 
 def main():
-    cases = sorted(p for p in OUT.glob("name-puzzle-*.json"))
+    cases = sorted(p for p in OUT.glob("*.json") if p.name != "summary.json")
     if not cases:
         sys.exit("No test output found: run `node tests/render.mjs` first.")
     for c in cases:

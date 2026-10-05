@@ -63,11 +63,11 @@ def original_outline(L):
 TOL_CHAMFER_JOIN = 0.03
 SHARP = set("AEFHIKLMNTVWXYZ")  # capitals with sharp vertical corners
 corner_cut_seen = False
-for meta_path in sorted(OUT.glob("name-puzzle-*.json")):
+for meta_path in sorted(p for p in OUT.glob("*.json") if p.name != "summary.json"):
     meta = json.loads(meta_path.read_text())
     p = meta["params"]
     c = p["fit_clearance"]
-    asm = trimesh.load(OUT / f"name-puzzle-{meta['text'].lower()}-assembled.stl", force="mesh")
+    asm = trimesh.load(OUT / f"{meta['stem']}-assembled.stl", force="mesh")
     bodies = asm.split(only_watertight=False)
     base = max(bodies, key=lambda b: b.extents[0] * b.extents[1])
     letters = [b for b in bodies if b is not base]
@@ -117,12 +117,16 @@ for meta_path in sorted(OUT.glob("name-puzzle-*.json")):
         top_sec = unary_union(as_list(section_polygons(b, zt - 0.05)))
         bot_sec = unary_union(as_list(section_polygons(b, zb + 0.05)))
         cham_ok = True
-        for amount, sec_face in ((ct, top_sec), (cb, bot_sec)):
-            if amount > 0:
+        nominal_top = zb + p["letter_thickness"]
+        # expected inset of the outline at each probe height (45 degrees): top chamfer ct below the nominal
+        # top, bottom chamfer cb above the bottom. On a stroke narrower than 2 * ct the stroke ends in a
+        # ridge below the nominal top, so the top is probed where the letter really ends.
+        for amount, sec_face, inset in ((ct, top_sec, ct - (nominal_top - (zt - 0.05))), (cb, bot_sec, cb - 0.05)):
+            if amount > 0 and inset > 0.1:
                 cham_ok &= sec_face.area < letter.area
                 if not sec_face.is_empty:
-                    cham_ok &= letter.buffer(-(amount - 0.15), join_style="mitre", mitre_limit=1e6).buffer(0.02).contains(sec_face.buffer(-0.02))
-        cham_ok &= abs((zt - zb) - p["letter_thickness"]) < 1e-3
+                    cham_ok &= letter.buffer(-(inset - 0.15), join_style="mitre", mitre_limit=1e6).buffer(0.02).contains(sec_face.buffer(-0.02))
+        cham_ok &= p["letter_thickness"] - ct <= (zt - zb) <= p["letter_thickness"] + 1e-3
         if not cham_ok:
             failures.append(f"{tag}: top/bottom faces are not chamfered by {ct}/{cb} mm")
         # the i / j dot bar and its pathway through the pocket

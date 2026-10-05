@@ -7,8 +7,9 @@
 
 import fs from 'node:fs';
 import { loadNodeRunner, repoPath } from './node-runner.mjs';
-import { prepareJob, fileStem } from '../lib/job.js';
-import { buildPuzzle } from '../lib/build.js';
+import { prepareJob, nameSeparatePlates, isAlreadySplit } from '../lib/job.js';
+import { planPlates } from '../lib/layout.js';
+import { buildPuzzle, makePlateStls } from '../lib/build.js';
 import { parseStl, transformTris, writeBinaryStl, mergeTris, meshStats } from '../lib/stl.js';
 import { GLYPHS } from '../lib/glyphs.js';
 
@@ -24,12 +25,13 @@ export const CASES = [
 
 const outDir = repoPath('tests/output/');
 fs.mkdirSync(outDir, { recursive: true });
-for (const f of fs.readdirSync(outDir)) if (f.startsWith('name-puzzle-')) fs.rmSync(outDir + f); // no stale files
+for (const f of fs.readdirSync(outDir)) if (!f.startsWith('.')) fs.rmSync(outDir + f); // no stale files
+const STAMP = '2026-01-01_12-00-00'; // fixed, so file names (typed word + date and time) are the same on every run
 const run = await loadNodeRunner();
 const summary = [];
 
 for (const input of CASES) {
-  let job = prepareJob(input);
+  let job = prepareJob({ ...input, fileStamp: STAMP });
   const label = `${job.text} (${input.caseStyle === 'caps' ? 'ALL CAPS' : 'First capital'}, ${job.heightMm} mm / ${(job.heightMm / 25.4).toFixed(2)} in, ${job.bed.label})`;
   const note = [];
   if (job.status !== 'ready') {
@@ -37,18 +39,30 @@ for (const input of CASES) {
       (job.maxHeightMm ? `, offers ${job.maxHeightMm} mm instead.` : `, base would be ${job.layout.base.width.toFixed(0)} mm wide (${job.widthAtMin.toFixed(0)} mm at ${job.minHeightMm} mm).`));
     // Still exercise the engine on the requested size with a bed big enough.
     const custom = { width: Math.min(1000, Math.ceil(job.layout.base.width + 20)), depth: 400 };
-    job = prepareJob({ ...input, printer: 'custom', customBed: custom });
+    job = prepareJob({ ...input, printer: 'custom', customBed: custom, fileStamp: STAMP });
     note.push(`Rendered on a custom ${custom.width} x ${custom.depth} mm bed to test the geometry and timing.`);
   }
   if (job.status !== 'ready') throw new Error(`${label}: ${job.status}`);
   const steps = [];
   const result = await buildPuzzle(run, job, { onStep: (s) => steps.push(s) });
-  const stem = fileStem(job.text);
+  const stem = job.stem;
   const files = [];
   for (const pl of result.plates) {
     const name = pl.file;
     fs.writeFileSync(outDir + name, pl.stl);
     files.push(name);
+  }
+  // "Two colours?" downloads: base alone and letters alone, as the app builds them from the same meshes.
+  let separate = [];
+  if (!isAlreadySplit(job.plan.plates)) {
+    const plan2 = planPlates(job.layout, job.bed, job.params, { separate: true });
+    nameSeparatePlates(job.stem, plan2.plates);
+    const stls = makePlateStls(plan2, job.layout, result.baseMesh, result.letterMeshes, job.bed);
+    separate = plan2.plates.map((pl, i) => {
+      fs.writeFileSync(outDir + pl.file, stls[i].stl);
+      return { file: pl.file, placements: pl.placements, hasBase: pl.hasBase, letterCount: pl.letterCount };
+    });
+    note.push(`two-colour downloads: ${separate.map((s) => s.file).join(', ')}`);
   }
   // The downloadable .scad must reproduce each plate by itself (desktop OpenSCAD path).
   for (const pl of result.plates) {
@@ -69,6 +83,7 @@ for (const input of CASES) {
   fs.writeFileSync(outDir + `${stem}.scad`, job.scad);
   const meta = {
     text: job.text,
+    stem,
     label,
     bed: job.bed,
     params: job.params,
@@ -94,6 +109,7 @@ for (const input of CASES) {
     minWall: job.layout.minWall,
     cornerWall: job.layout.cornerWall,
     plates: job.plan.plates.map((pl, i) => ({ file: files[i], placements: pl.placements })),
+    separate,
     timings: result.timings,
     grams: result.grams,
     warnings: result.warnings,

@@ -25,6 +25,15 @@ model in a Web Worker. There is no server, no build step and no framework: just 
    letters go on their own plate as a separate STL (`…-base.stl` and `…-letters.stl`, plus a
    ZIP). If the base doesn't fit even turned, the app says by how much and offers the
    tallest letter height that fits. It never makes a file that can't print.
+**File names** are the word as typed plus the local date and time of the build, for example
+`Patrick_2026-10-05_14-32-07.stl` (`.scad`, `.zip` and `-base` / `-letters` / `-plate2` parts follow
+the same pattern).
+
+**Two colours?** Under the downloads there are **Base only** and **Letters only** buttons
+(`…-base-only.stl`, `…-letters-only.stl`): the base alone on its plate, the letters packed on their
+own, so each can be printed in its own filament. The row is hidden when the normal download is
+already split that way (a base turned 45°).
+
 3. **OpenSCAD source** (`lib/scad.js`). A readable `.scad` file with every parameter named
    at the top. You can download it and tweak it in desktop OpenSCAD.
 4. **Render** (`worker.js`, `lib/build.js`). Each distinct letter and the base are rendered
@@ -39,7 +48,7 @@ around that bar. The glyph tool checks every A–Z and a–z glyph for loose isl
 only i and j have any) and fails if any letter is still in pieces with the bar at 10 mm and
 76.2 mm letter heights.
 
-**Letter chamfers.** The top face of every letter has a 1 mm 45° chamfer and the bottom face
+**Letter chamfers.** The top face of every letter has a 2 mm 45° chamfer and the bottom face
 0.4 mm (counters elephant's foot and eases the drop-in), cut as 0.1 mm steps. The vertical
 corners of the letters are chamfered too (E, M, T, …). The pockets are cut from the original,
 un-chamfered outline, so a chamfered letter always fits; the bar between an i/j dot and its
@@ -55,11 +64,11 @@ All dimensions are in mm. Names match the generated `.scad`.
 | Parameter | Default | Notes |
 |---|---|---|
 | `letter_height` | 14 | Slider 10–76.2 mm (0.4–3 in), step 0.2 mm. Cap height of capitals; lowercase letters keep the font's proportions. |
-| `letter_thickness` | 8 | Advanced, 4–15. Always at least `pocket_depth + 1`. |
-| `pocket_depth` | 5 | Advanced, 2–10. Letters stand `letter_thickness − pocket_depth` (3 mm) proud. |
+| `letter_thickness` | 14 | Advanced, 4–15. Always at least `pocket_depth + 1`. |
+| `pocket_depth` | 5 | Advanced, 2–10. Letters stand `letter_thickness − pocket_depth` (9 mm) proud. |
 | `base_floor` | 3 | Solid floor under the pockets, so `base_thickness` = 8. |
 | `fit_clearance` | 2 | Advanced, 0.1–3, per side. Pocket = letter outline `offset(delta = fit_clearance)`. The default 2 mm is roomy, easy for small hands; use 0.2 for snug, 0.3 slip fit, 0.4 loose. With 2 mm, a counter (hole in a, e, o…) narrower than 4 mm closes up, so those pockets have no inner post. |
-| `letter_chamfer` | 1 | Advanced, 0–1 (and at most 7.5% of the letter height). 45° chamfer around the top face of each letter. |
+| `letter_chamfer` | 2 | Advanced, 0–2 (and at most 15% of the letter height). 45° chamfer around the top face of each letter. On strokes narrower than twice the chamfer (14 mm letters have ~2.2 mm strokes) the stroke ends in a ridge a little below the nominal top. |
 | `letter_corner_chamfer` | `letter_chamfer`, at most 3.5% of the letter height (0.49 at 14 mm) | 45° chamfer on the vertical corners of each letter, in plan view. Limited because it is cut by eroding and re-growing the outline, which deletes strokes thinner than twice the chamfer (1 mm at 14 mm would split letters; measured). |
 | `letter_bottom_chamfer` | 0.4 | 45° chamfer around the bottom face of each letter. |
 | `bridge_width` | 5 | Width of the bar joining the dot of i and j to its stem. |
@@ -68,7 +77,7 @@ All dimensions are in mm. Names match the generated `.scad`.
 | `letter_gap` | 3 | Minimum wall between neighbouring pocket openings. |
 | `corner_chamfer` | 4 | Advanced, 1–15. Vertical corner cut, 45° in plan view. |
 | `corner_min_wall` | 1.2 | If a corner cut would leave less wall than this at a pocket, the base grows slightly in Y on that side. |
-| `edge_chamfer` | 1 | Advanced. Base top perimeter edge. Capped below `side_margin − 0.8` (max 1.1), with a note. |
+| `edge_chamfer` | 1.1 | Advanced. Base top perimeter edge. Capped below `side_margin − 0.8` (max 1.1), with a note. |
 | `bottom_chamfer` | 0.4 | Bottom perimeter edge, counters elephant's foot. |
 | `part_spacing` | 5 | Gap between parts on the build plate. |
 | `bed_margin` | 3 | Parts stay this far inside the bed edges. |
@@ -94,6 +103,7 @@ module Web Worker. You can link straight to a name: `http://localhost:8000/?name
 ```sh
 node --test                          # unit tests for lib/layout.js and lib/scad.js (no dependencies)
 node tests/render.mjs                # renders real STLs into tests/output/ with the vendored wasm
+node tests/check_channels.mjs        # every i/j pocket holds the bar between dot and stem (many names, heights, clearances)
 pip install -r tests/requirements.txt
 python3 tests/validate_stl.py        # watertight, Z = 0, inside bed, no overlaps, sizes, margins, walls
 cd tests && python3 fit_check.py     # each pocket = its letter offset by the clearance; i/j are one piece, 5 mm bar, letter chamfers

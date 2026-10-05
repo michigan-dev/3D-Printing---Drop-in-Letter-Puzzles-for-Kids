@@ -6,7 +6,7 @@ import {
   maxEdgeChamfer, computeLayout, planPlates, bedFor, maxFittingHeightMm, offsetContour, DEFAULTS,
   HEIGHT_MIN_MM, HEIGHT_MAX_MM, HEIGHT_STEP_MM, HEIGHT_DEFAULT_MM, glyphBBox, fontSizeFor,
 } from '../lib/layout.js';
-import { prepareJob } from '../lib/job.js';
+import { prepareJob, timeStamp, fileStem, nameSeparatePlates, isAlreadySplit } from '../lib/job.js';
 import * as glyphData from '../lib/glyphs.js';
 
 const layoutAtMm = (text, mm, user = {}) => {
@@ -93,25 +93,35 @@ test('edge chamfer is clamped below side_margin - 0.8 mm, with a note', () => {
   assert.equal(resolveParams({ edge_chamfer: 1 }).notes.edge_chamfer, undefined);
 });
 
-test('letter chamfer: default 1 mm; capped at 7.5% of the cap height with a note when the letters are tiny', () => {
-  assert.equal(DEFAULTS.letter_chamfer, 1);
+test('default advanced settings: 2 / 14 / 5 / 4 / 1.1 / 2 mm, none of them clamped', () => {
+  const r = resolveParams({ letter_height: 14 });
+  assert.deepEqual(
+    ['fit_clearance', 'letter_thickness', 'pocket_depth', 'corner_chamfer', 'edge_chamfer', 'letter_chamfer'].map((k) => r.params[k]),
+    [2, 14, 5, 4, 1.1, 2]);
+  assert.deepEqual(r.notes, {});
+  assert.equal(r.params.base_thickness, 8);
+});
+
+test('letter chamfer: default 2 mm; capped at 15% of the cap height with a note when the letters are tiny', () => {
+  assert.equal(DEFAULTS.letter_chamfer, 2);
   for (const mm of [14, 50.8, 76.2]) {
     const r = resolveParams({ letter_height: mm });
-    assert.equal(r.params.letter_chamfer, 1, `${mm} mm`);
+    assert.equal(r.params.letter_chamfer, 2, `${mm} mm`);
     assert.equal(r.notes.letter_chamfer, undefined);
   }
   const tiny = resolveParams({ letter_height: 10 });
-  assert.equal(tiny.params.letter_chamfer, 0.75);
-  assert.match(tiny.notes.letter_chamfer, /Capped at 0\.75 mm/);
-  assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 5 }).params.letter_chamfer, 1);
+  assert.equal(tiny.params.letter_chamfer, 1.5);
+  assert.match(tiny.notes.letter_chamfer, /Capped at 1\.5 mm/);
+  assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 5 }).params.letter_chamfer, 2);
   assert.equal(DEFAULTS.letter_bottom_chamfer, 0.4);
 });
 
 test('vertical-corner chamfer follows the letter chamfer but stays under 3.5% of the cap height', () => {
-  // 1 mm at 14 mm would delete thin strokes (measured on Andika Bold); it is 1 mm only from 28.6 mm up
+  // 1 mm at 14 mm would delete thin strokes (measured on Andika Bold), so at 14 mm it is 0.49 mm
   assert.equal(resolveParams({ letter_height: 14 }).params.letter_corner_chamfer, 0.49);
   assert.equal(resolveParams({ letter_height: 10 }).params.letter_corner_chamfer, 0.35);
-  assert.equal(resolveParams({ letter_height: 50.8 }).params.letter_corner_chamfer, 1);
+  assert.equal(resolveParams({ letter_height: 50.8 }).params.letter_corner_chamfer, 1.78);
+  assert.equal(resolveParams({ letter_height: 76.2 }).params.letter_corner_chamfer, 2);
   assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 0.5 }).params.letter_corner_chamfer, 0.5);
   assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 0 }).params.letter_corner_chamfer, 0);
 });
@@ -295,13 +305,21 @@ test('long name: base turned 45 degrees to fit, alone on plate 1; letters on the
   assert.ok(bad.over > 0);
 });
 
-test('job names the plates: base / letters files for a split, one plain file otherwise', () => {
-  const split = prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightMm: 60, printer: 'a1', withScad: false });
+test('files are named: the word typed in, plus local date and time', () => {
+  assert.equal(timeStamp(new Date(2026, 9, 5, 14, 3, 7)), '2026-10-05_14-03-07');
+  assert.equal(fileStem('Patrick', '2026-10-05_14-03-07'), 'Patrick_2026-10-05_14-03-07');
+  const stamp = '2026-10-05_14-03-07';
+  // the word is what was typed, letters only
+  const one = prepareJob({ rawName: "patr-ick 2", caseStyle: 'caps', printer: 'a1', withScad: false, fileStamp: stamp });
+  assert.equal(one.text, 'PATRICK');
+  assert.equal(one.stem, 'patrick_' + stamp);
+  assert.deepEqual(one.plan.plates.map((p) => p.file), ['patrick_2026-10-05_14-03-07.stl']);
+  // a long name: base and letters are separate files with the same word and stamp
+  const split = prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightMm: 60, printer: 'a1', withScad: false, fileStamp: stamp });
   assert.equal(split.status, 'ready');
   assert.deepEqual(split.plan.plates.map((p) => [p.file, p.label]), [
-    ['name-puzzle-emma-base.stl', 'Base STL'], ['name-puzzle-emma-letters.stl', 'Letters STL']]);
-  const one = prepareJob({ rawName: 'Emma', caseStyle: 'first', printer: 'a1', withScad: false });
-  assert.deepEqual(one.plan.plates.map((p) => p.file), ['name-puzzle-emma.stl']);
+    ['EMMA_2026-10-05_14-03-07-base.stl', 'Base STL'], ['EMMA_2026-10-05_14-03-07-letters.stl', 'Letters STL']]);
+  assert.match(prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1', fileStamp: stamp }).scad, /Generated on 2026-10-05 14:03:07/);
 });
 
 test('bed fit: base fits but letters do not -> split across plates', () => {
@@ -328,4 +346,28 @@ test('bed fit: custom bed taller than wide turns the base a quarter turn', () =>
 
 test('custom bed size is clamped to 100-1000 mm', () => {
   assert.deepEqual([bedFor('custom', { width: 5, depth: 5000 }).width, bedFor('custom', { width: 5, depth: 5000 }).depth], [100, 1000]);
+});
+
+test('two colours: base alone on its plate, letters on their own plate(s), with their own file names', () => {
+  const bed = bedFor('a1');
+  const { layout, params } = layoutAtMm('Mia', 14);
+  const together = planPlates(layout, bed, params);
+  assert.equal(together.plates.length, 1);
+  assert.equal(isAlreadySplit(together.plates), false);
+  const plan = planPlates(layout, bed, params, { separate: true });
+  assert.equal(plan.ok, true);
+  assert.equal(plan.plates.length, 2);
+  assert.deepEqual(plan.plates.map((pl) => [pl.hasBase, pl.letterCount]), [[true, 0], [false, 3]]);
+  assertPlatesValid(plan, bed, params, 3);
+  nameSeparatePlates('Mia_2026-10-05_14-03-07', plan.plates);
+  assert.deepEqual(plan.plates.map((pl) => [pl.file, pl.label]), [
+    ['Mia_2026-10-05_14-03-07-base-only.stl', 'Base only'], ['Mia_2026-10-05_14-03-07-letters-only.stl', 'Letters only']]);
+  // a plan that is already base | letters needs no extra buttons
+  const turned = layoutAtMm('EMMA', 60);
+  assert.equal(isAlreadySplit(planPlates(turned.layout, bed, turned.params).plates), true);
+  // many big letters: the letters-only download may need several plates, numbered
+  const big = layoutAtMm('Lily', 76.2);
+  const mk4 = planPlates(big.layout, bedFor('mk4'), big.params, { separate: true });
+  assert.equal(mk4.ok, true);
+  assert.ok(mk4.plates[0].hasBase && mk4.plates[0].letterCount === 0);
 });

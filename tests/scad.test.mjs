@@ -21,7 +21,7 @@ test('job is ready and the .scad is generated', () => {
 
 test('.scad contains the expected parameter values', () => {
   assert.equal(value('letter_height'), '63.5');
-  assert.equal(value('letter_thickness'), '8');
+  assert.equal(value('letter_thickness'), '14');
   assert.equal(value('pocket_depth'), '5');
   assert.equal(value('base_floor'), '3');
   assert.equal(value('base_thickness'), 'pocket_depth + base_floor');
@@ -39,7 +39,9 @@ test('.scad has 14 mm height, 2 mm clearance, letter chamfers (faces and vertica
   const def = prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1' }).scad;
   assert.match(def, /^letter_height = 14;/m);
   assert.match(def, /^fit_clearance = 2;/m);
-  assert.match(def, /^letter_chamfer = 1;/m);
+  assert.match(def, /^letter_chamfer = 2;/m);
+  assert.match(def, /^letter_thickness = 14;/m);
+  assert.match(def, /^edge_chamfer = 1\.1;/m);
   assert.match(def, /^letter_corner_chamfer = 0\.49;/m);
   assert.match(def, /offset\(delta = c, chamfer = true\) offset\(delta = -c\)/);
   // pockets use the original outline, letters the corner-chamfered one
