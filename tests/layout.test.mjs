@@ -93,22 +93,38 @@ test('edge chamfer is clamped below side_margin - 0.8 mm, with a note', () => {
   assert.equal(resolveParams({ edge_chamfer: 1 }).notes.edge_chamfer, undefined);
 });
 
-test('letter chamfer: default 0.6 mm is accepted at every height, larger values are capped with a note', () => {
-  for (const mm of [10, 14, 50.8, 76.2]) {
+test('letter chamfer: default 1 mm; capped at 7.5% of the cap height with a note when the letters are tiny', () => {
+  assert.equal(DEFAULTS.letter_chamfer, 1);
+  for (const mm of [14, 50.8, 76.2]) {
     const r = resolveParams({ letter_height: mm });
-    assert.equal(r.params.letter_chamfer, 0.6, `${mm} mm`);
+    assert.equal(r.params.letter_chamfer, 1, `${mm} mm`);
     assert.equal(r.notes.letter_chamfer, undefined);
   }
-  const big = resolveParams({ letter_height: 14, letter_chamfer: 1 });
-  assert.equal(big.params.letter_chamfer, 0.84);
-  assert.match(big.notes.letter_chamfer, /Capped at 0\.84 mm/);
+  const tiny = resolveParams({ letter_height: 10 });
+  assert.equal(tiny.params.letter_chamfer, 0.75);
+  assert.match(tiny.notes.letter_chamfer, /Capped at 0\.75 mm/);
   assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 5 }).params.letter_chamfer, 1);
   assert.equal(DEFAULTS.letter_bottom_chamfer, 0.4);
 });
 
+test('vertical-corner chamfer follows the letter chamfer but stays under 3.5% of the cap height', () => {
+  // 1 mm at 14 mm would delete thin strokes (measured on Andika Bold); it is 1 mm only from 28.6 mm up
+  assert.equal(resolveParams({ letter_height: 14 }).params.letter_corner_chamfer, 0.49);
+  assert.equal(resolveParams({ letter_height: 10 }).params.letter_corner_chamfer, 0.35);
+  assert.equal(resolveParams({ letter_height: 50.8 }).params.letter_corner_chamfer, 1);
+  assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 0.5 }).params.letter_corner_chamfer, 0.5);
+  assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 0 }).params.letter_corner_chamfer, 0);
+});
+
+test('fit clearance defaults to 2 mm per side', () => {
+  assert.equal(DEFAULTS.fit_clearance, 2);
+  assert.equal(resolveParams().params.fit_clearance, 2);
+  assert.equal(resolveParams({ fit_clearance: 0.3 }).params.fit_clearance, 0.3);
+});
+
 test('advanced values are clamped to safe ranges', () => {
-  const r = resolveParams({ fit_clearance: 2, pocket_depth: 6, letter_thickness: 5 });
-  assert.equal(r.params.fit_clearance, 0.6);
+  const r = resolveParams({ fit_clearance: 9, pocket_depth: 6, letter_thickness: 5 });
+  assert.equal(r.params.fit_clearance, 3);
   assert.equal(r.params.letter_thickness, 7); // must stand at least 1 mm proud
   assert.ok(r.notes.fit_clearance && r.notes.letter_thickness);
   assert.equal(r.params.base_thickness, 6 + 3);

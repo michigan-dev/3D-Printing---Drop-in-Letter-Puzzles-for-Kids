@@ -35,15 +35,23 @@ test('.scad contains the expected parameter values', () => {
   assert.match(value('font_size'), /^letter_height \/ 0\.99\d+$/);
 });
 
-test('.scad has 14 mm default height, letter chamfers and a 5 mm bridge', () => {
+test('.scad has 14 mm height, 2 mm clearance, letter chamfers (faces and vertical corners) and a 5 mm bridge', () => {
   const def = prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1' }).scad;
   assert.match(def, /^letter_height = 14;/m);
-  assert.match(def, /^letter_chamfer = 0\.6;/m);
+  assert.match(def, /^fit_clearance = 2;/m);
+  assert.match(def, /^letter_chamfer = 1;/m);
+  assert.match(def, /^letter_corner_chamfer = 0\.49;/m);
+  assert.match(def, /offset\(delta = c, chamfer = true\) offset\(delta = -c\)/);
+  // pockets use the original outline, letters the corner-chamfered one
+  assert.match(def, /offset\(delta = fit_clearance\) glyph\(letters\[i\]\[0\]\)/);
+  assert.match(def, /linear_extrude\(height = letter_thickness - bot - top\) letter_outline\(ch\)/);
   assert.match(def, /^letter_bottom_chamfer = 0\.4;/m);
   assert.match(def, /^bridge_width = 5;/m);
   assert.match(def, /^chamfer_step = 0\.1;/m);
-  assert.match(def, /offset\(delta = -\(top - \(k \+ 0\.5\) \* top \/ nt\)\) glyph\(ch\)/);
-  assert.match(def, /square\(\[bridge_width, /);
+  assert.match(def, /offset\(delta = -\(top - \(k \+ 0\.5\) \* top \/ nt\)\) letter_outline\(ch\)/);
+  assert.match(def, /module bar\(b, k = 0\)/);
+  assert.match(def, /for \(b = \[for \(e = glyph_bridges\) if \(e\[0\] == ch\) e\[1\]\]\) bar\(b, c\)/); // chamfered bar on letters
+  assert.match(def, /for \(b = \[for \(e = glyph_bridges\) if \(e\[0\] == ch\) e\[1\]\]\) bar\(b\)/); // square bar in pockets
   assert.doesNotMatch(def, /minkowski/);
 });
 

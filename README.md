@@ -39,9 +39,12 @@ around that bar. The glyph tool checks every A–Z and a–z glyph for loose isl
 only i and j have any) and fails if any letter is still in pieces with the bar at 10 mm and
 76.2 mm letter heights.
 
-**Letter chamfers.** The top face of every letter has a 0.6 mm 45° chamfer and the bottom
-face 0.4 mm (counters elephant's foot and eases the drop-in), cut as 0.1 mm steps. The part
-that sits in the pocket keeps the exact outline the pocket was cut from.
+**Letter chamfers.** The top face of every letter has a 1 mm 45° chamfer and the bottom face
+0.4 mm (counters elephant's foot and eases the drop-in), cut as 0.1 mm steps. The vertical
+corners of the letters are chamfered too (E, M, T, …). The pockets are cut from the original,
+un-chamfered outline, so a chamfered letter always fits; the bar between an i/j dot and its
+stem is part of that outline, so the pocket always has a pathway for it. The preview shows
+blue letters on a green base.
 Counters (the holes in a, b, d, e, g, o, p, q, A, B, D, O, P, Q, R) stay open in the letter.
 The pocket stays solid there, leaving a post that helps the letter seat correctly.
 
@@ -55,8 +58,9 @@ All dimensions are in mm. Names match the generated `.scad`.
 | `letter_thickness` | 8 | Advanced, 4–15. Always at least `pocket_depth + 1`. |
 | `pocket_depth` | 5 | Advanced, 2–10. Letters stand `letter_thickness − pocket_depth` (3 mm) proud. |
 | `base_floor` | 3 | Solid floor under the pockets, so `base_thickness` = 8. |
-| `fit_clearance` | 0.3 | Advanced, 0.1–0.6, per side. Pocket = letter outline `offset(delta = fit_clearance)`. 0.2 snug, 0.3 slip fit, 0.4 loose. |
-| `letter_chamfer` | 0.6 | Advanced, 0–1 (and at most 6% of the letter height). 45° chamfer around the top face of each letter. |
+| `fit_clearance` | 2 | Advanced, 0.1–3, per side. Pocket = letter outline `offset(delta = fit_clearance)`. The default 2 mm is roomy, easy for small hands; use 0.2 for snug, 0.3 slip fit, 0.4 loose. With 2 mm, a counter (hole in a, e, o…) narrower than 4 mm closes up, so those pockets have no inner post. |
+| `letter_chamfer` | 1 | Advanced, 0–1 (and at most 7.5% of the letter height). 45° chamfer around the top face of each letter. |
+| `letter_corner_chamfer` | `letter_chamfer`, at most 3.5% of the letter height (0.49 at 14 mm) | 45° chamfer on the vertical corners of each letter, in plan view. Limited because it is cut by eroding and re-growing the outline, which deletes strokes thinner than twice the chamfer (1 mm at 14 mm would split letters; measured). |
 | `letter_bottom_chamfer` | 0.4 | 45° chamfer around the bottom face of each letter. |
 | `bridge_width` | 5 | Width of the bar joining the dot of i and j to its stem. |
 | `lead_in` | 0.5 | 45° chamfer around the top of each pocket, cut as 5 steps of 0.1 mm. |

@@ -5,7 +5,7 @@
 // Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
 // website's fonts/ folder), or install Andika on your computer.
 //
-// Base 266.0475 x 52.1212 x 8 mm (10.5 x 2.1 in), 2 plate(s) on Bambu A1 (256 x 256 mm).
+// Base 289.7784 x 55.5234 x 8 mm (11.4 x 2.2 in), 2 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
@@ -20,7 +20,7 @@ letter_index = 0;
 
 /* [Fit] */
 // Gap per side between letter and pocket: 0.2 snug, 0.3 default, 0.4 loose.
-fit_clearance = 0.3;
+fit_clearance = 2;
 // 45 degree chamfer around the top of each pocket, so letters drop in easily.
 lead_in = 0.5;
 lead_in_steps = 5;
@@ -41,9 +41,12 @@ bottom_chamfer = 0.4;
 
 /* [Letters] */
 // 45 degree chamfer around the top face of each letter.
-letter_chamfer = 0.6;
+letter_chamfer = 1;
 // And around its bottom face (elephant's foot, easier drop-in).
 letter_bottom_chamfer = 0.4;
+// Chamfer of the letters' vertical corners (plan view). Limited to 3.5% of the cap height,
+// because it is cut by eroding and re-growing the outline, which would delete thin strokes.
+letter_corner_chamfer = 1;
 // Width of the bar that joins the dot of i and j to its stem.
 bridge_width = 5;
 
@@ -51,7 +54,7 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [266.0475, 52.1212];
+base_size = [289.7784, 55.5234];
 font = "Andika:style=Bold";
 // text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
 font_size = letter_height / 0.99013;
@@ -63,15 +66,15 @@ chamfer_step = 0.1;
 overcut = 0.01;
 
 letters = [
-  ["C", 1.3343, 4.4858],  // [character, pen x, baseline y] in base coordinates
-  ["h", 39.2792, 4.4858],
-  ["a", 73.1148, 4.4858],
-  ["r", 107.5256, 4.4858],
-  ["l", 134.7858, 4.4858],
-  ["o", 152.3201, 4.4858],
-  ["t", 184.3076, 4.4858],
-  ["t", 210.1453, 4.4858],
-  ["e", 234.3918, 4.4858],
+  ["C", 3.0347, 6.188],  // [character, pen x, baseline y] in base coordinates
+  ["h", 42.2391, 6.188],
+  ["a", 77.916, 6.188],
+  ["r", 114.9683, 6.188],
+  ["l", 145.0672, 6.188],
+  ["o", 163.2089, 6.188],
+  ["t", 199.1213, 6.188],
+  ["t", 228.3591, 6.188],
+  ["e", 256.3215, 6.188],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
@@ -84,7 +87,7 @@ glyph_bridges = [
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 52.3656, 15.5104, 45]
+    [-1, 45.1784, 5.9174, 45]
   ],
   [ // plate 2
     [0, 12.0622, 126.322, 0],
@@ -101,17 +104,35 @@ plates = [
 
 // ---------------------------------------------------------------- modules
 
-// One letter as a 2D shape, pen origin at [0, 0] on the baseline.
-module glyph(ch) {
-  text(ch, size = font_size, font = font, halign = "left", valign = "baseline", $fn = text_fn);
-  for (b = [for (e = glyph_bridges) if (e[0] == ch) e[1]])
-    translate([(b[0] + b[2]) / 2 * font_size - bridge_width / 2, b[1] * font_size])
-      square([bridge_width, (b[3] - b[1]) * font_size]);
+// The bar that joins the dot of i / j to its stem, centred on the stem. k cuts its corners at 45 degrees.
+module bar(b, k = 0) {
+  w = bridge_width;
+  h = (b[3] - b[1]) * font_size;
+  kk = min(k, h / 2.5);
+  translate([(b[0] + b[2]) / 2 * font_size - w / 2, b[1] * font_size])
+    if (kk > 0) polygon([[kk, 0], [w - kk, 0], [w, kk], [w, h - kk], [w - kk, h], [kk, h], [0, h - kk], [0, kk]]);
+    else square([w, h]);
 }
 
-// One letter, standing on its bottom face. The full outline is kept between the
-// chamfers, so the part that sits in the pocket is exactly the outline the pocket
-// was cut from. Top and bottom faces are chamfered at 45 degrees, cut as stacked
+// One letter as a 2D shape, pen origin at [0, 0] on the baseline. The pockets are cut from this
+// outline (the layout measures it), and so are the letters, apart from their rounded-off corners.
+module glyph(ch) {
+  text(ch, size = font_size, font = font, halign = "left", valign = "baseline", $fn = text_fn);
+  for (b = [for (e = glyph_bridges) if (e[0] == ch) e[1]]) bar(b);
+}
+
+// The letter's own outline: the vertical corners of the letter are chamfered. The bar between a dot
+// and its stem is added afterwards (with its own chamfered corners) so the chamfering cannot cut it.
+module letter_outline(ch) {
+  c = letter_corner_chamfer;
+  if (c > 0) offset(delta = c, chamfer = true) offset(delta = -c)
+    text(ch, size = font_size, font = font, halign = "left", valign = "baseline", $fn = text_fn);
+  else text(ch, size = font_size, font = font, halign = "left", valign = "baseline", $fn = text_fn);
+  for (b = [for (e = glyph_bridges) if (e[0] == ch) e[1]]) bar(b, c);
+}
+
+// One letter, standing on its bottom face. The full letter outline is kept between the
+// chamfers; the pocket is cut from the un-chamfered glyph(), so the letter always fits. Top and bottom faces are chamfered at 45 degrees, cut as stacked
 // steps chamfer_step tall (finer than a print layer) from progressively inset outlines.
 module letter(i) {
   ch = letters[i][0];
@@ -119,15 +140,15 @@ module letter(i) {
   top = letter_chamfer;
   nb = bot > 0 ? max(1, round(bot / chamfer_step)) : 0;
   nt = top > 0 ? max(1, round(top / chamfer_step)) : 0;
-  translate([0, 0, bot]) linear_extrude(height = letter_thickness - bot - top) glyph(ch);
+  translate([0, 0, bot]) linear_extrude(height = letter_thickness - bot - top) letter_outline(ch);
   if (nb > 0) for (k = [0 : nb - 1])
     translate([0, 0, k * bot / nb])
       linear_extrude(height = bot - k * bot / nb + overcut)
-        offset(delta = -(bot - (k + 0.5) * bot / nb)) glyph(ch);
+        offset(delta = -(bot - (k + 0.5) * bot / nb)) letter_outline(ch);
   if (nt > 0) for (k = [0 : nt - 1])
     translate([0, 0, letter_thickness - top - overcut])
       linear_extrude(height = top - k * top / nt + overcut)
-        offset(delta = -(top - (k + 0.5) * top / nt)) glyph(ch);
+        offset(delta = -(top - (k + 0.5) * top / nt)) letter_outline(ch);
 }
 
 // Plan outline of the base: rectangle with 45 degree corner cuts, shrunk by inset.

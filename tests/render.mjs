@@ -10,6 +10,7 @@ import { loadNodeRunner, repoPath } from './node-runner.mjs';
 import { prepareJob, fileStem } from '../lib/job.js';
 import { buildPuzzle } from '../lib/build.js';
 import { parseStl, transformTris, writeBinaryStl, mergeTris, meshStats } from '../lib/stl.js';
+import { GLYPHS } from '../lib/glyphs.js';
 
 export const CASES = [
   { rawName: 'Mia', caseStyle: 'first', heightIn: 2, printer: 'a1' },
@@ -74,7 +75,20 @@ for (const input of CASES) {
     base: job.layout.base,
     baselineY: job.layout.baselineY,
     fontSize: job.layout.fontSize,
-    letters: job.layout.letters.map((L) => ({ ch: L.ch, x: L.x, y: L.y })),
+    // The un-chamfered outline of every letter in base coordinates (mm): what the pocket is cut from.
+    letters: job.layout.letters.map((L) => ({
+      ch: L.ch, x: L.x, y: L.y,
+      outline: {
+        shapes: GLYPHS[L.ch].shapes.map((sh) => ({
+          outer: sh.outer.map((v, i) => v * job.layout.fontSize + (i % 2 ? L.y : L.x)),
+          holes: sh.holes.map((h) => h.map((v, i) => v * job.layout.fontSize + (i % 2 ? L.y : L.x))),
+        })),
+        bars: GLYPHS[L.ch].bridges.map(([x0, y0, x1, y1]) => {
+          const cx = ((x0 + x1) / 2) * job.layout.fontSize + L.x, half = job.params.bridge_width / 2;
+          return [cx - half, y0 * job.layout.fontSize + L.y, cx + half, y1 * job.layout.fontSize + L.y];
+        }),
+      },
+    })),
     margins: job.layout.margins,
     grow: job.layout.grow,
     minWall: job.layout.minWall,
