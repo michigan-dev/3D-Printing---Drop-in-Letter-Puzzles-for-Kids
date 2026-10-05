@@ -1,0 +1,6 @@
+trimesh>=4
+shapely>=2
+numpy
+networkx
+scipy
+rtree

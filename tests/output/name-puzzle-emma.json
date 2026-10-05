@@ -1,0 +1,154 @@
+{
+  "text": "EMMA",
+  "label": "EMMA (ALL CAPS, 3 in, Bambu A1)",
+  "bed": {
+    "id": "custom",
+    "label": "Custom bed",
+    "width": 351,
+    "depth": 400
+  },
+  "params": {
+    "letter_height": 76.2,
+    "letter_thickness": 8,
+    "pocket_depth": 5,
+    "base_floor": 3,
+    "fit_clearance": 0.3,
+    "lead_in": 0.5,
+    "lead_in_steps": 5,
+    "side_margin": 2,
+    "letter_gap": 3,
+    "corner_chamfer": 4,
+    "edge_chamfer": 1,
+    "bottom_chamfer": 0.4,
+    "corner_min_wall": 1.2,
+    "part_spacing": 5,
+    "bed_margin": 3,
+    "base_thickness": 8
+  },
+  "base": {
+    "width": 330.6951394016793,
+    "depth": 86.02399999999999,
+    "thickness": 8
+  },
+  "baselineY": 4.912,
+  "fontSize": 76.95959116479655,
+  "letters": [
+    {
+      "ch": "E",
+      "x": -3.888614913165517,
+      "y": 4.912
+    },
+    {
+      "ch": "M",
+      "x": 59.367551448827356,
+      "y": 4.912
+    },
+    {
+      "ch": "M",
+      "x": 156.1827171341414,
+      "y": 4.912
+    },
+    {
+      "ch": "A",
+      "x": 252.99788281945544,
+      "y": 4.912
+    }
+  ],
+  "margins": {
+    "left": 2,
+    "right": 2,
+    "bottom": 3.112,
+    "top": 3.1119999999999806
+  },
+  "grow": {
+    "top": 1.112,
+    "bottom": 1.112
+  },
+  "minWall": 9.71906246143854,
+  "cornerWall": 1.2005163030525228,
+  "plates": [
+    {
+      "file": "name-puzzle-emma.stl",
+      "placements": [
+        {
+          "kind": "base",
+          "index": 0,
+          "rot": 0,
+          "tx": 10.152430299160358,
+          "ty": 197.58800000000002,
+          "rect": [
+            10.152430299160358,
+            197.58800000000002,
+            340.84756970083964,
+            283.612
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 0,
+          "rot": 0,
+          "tx": 2.3233310899656043,
+          "ty": 116.388,
+          "rect": [
+            10.152430299160358,
+            116.388,
+            59.83831195106466,
+            192.58800000000002
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 1,
+          "rot": 0,
+          "tx": 57.009212741869916,
+          "ty": 116.388,
+          "rect": [
+            64.83831195106467,
+            116.388,
+            144.69081414774593,
+            192.58800000000002
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 2,
+          "rot": 0,
+          "tx": 141.86171493855116,
+          "ty": 116.388,
+          "rect": [
+            149.69081414774593,
+            116.388,
+            229.54331634442718,
+            192.58800000000002
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 3,
+          "rot": 0,
+          "tx": 231.82972115995645,
+          "ty": 116.388,
+          "rect": [
+            234.54331634442718,
+            116.388,
+            305.3153563795741,
+            192.58800000000002
+          ]
+        }
+      ]
+    }
+  ],
+  "timings": {
+    "letters": 162,
+    "base": 225,
+    "plates": 12,
+    "total": 446
+  },
+  "grams": 142.3802745162003,
+  "warnings": [],
+  "notes": [
+    "On Bambu A1 the app blocks this build: status \"too-big\", offers 2 in instead.",
+    "Rendered on a custom 351 x 400 mm bed to test the geometry and timing.",
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 259.1 cm3, 0.2 s)."
+  ]
+}

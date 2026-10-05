@@ -1,0 +1,158 @@
+{
+  "text": "Lily",
+  "label": "Lily (First capital, 3 in, Prusa MK4)",
+  "bed": {
+    "id": "mk4",
+    "label": "Prusa MK4",
+    "width": 250,
+    "depth": 210
+  },
+  "params": {
+    "letter_height": 76.2,
+    "letter_thickness": 8,
+    "pocket_depth": 5,
+    "base_floor": 3,
+    "fit_clearance": 0.3,
+    "lead_in": 0.5,
+    "lead_in_steps": 5,
+    "side_margin": 2,
+    "letter_gap": 3,
+    "corner_chamfer": 4,
+    "edge_chamfer": 1,
+    "bottom_chamfer": 0.4,
+    "corner_min_wall": 1.2,
+    "part_spacing": 5,
+    "bed_margin": 3,
+    "base_thickness": 8
+  },
+  "base": {
+    "width": 183.01415866981026,
+    "depth": 115.63715859637126,
+    "thickness": 8
+  },
+  "baselineY": 28.33061501118547,
+  "fontSize": 76.95959116479655,
+  "letters": [
+    {
+      "ch": "L",
+      "x": -3.888614913165517,
+      "y": 28.33061501118547
+    },
+    {
+      "ch": "i",
+      "x": 55.087828584153016,
+      "y": 28.33061501118547
+    },
+    {
+      "ch": "l",
+      "x": 88.49059993740967,
+      "y": 28.33061501118547
+    },
+    {
+      "ch": "y",
+      "x": 121.89337129066631,
+      "y": 28.33061501118547
+    }
+  ],
+  "margins": {
+    "left": 2,
+    "right": 2,
+    "bottom": 2,
+    "top": 2
+  },
+  "grow": {
+    "top": 0,
+    "bottom": 0
+  },
+  "minWall": 8.351843898673373,
+  "cornerWall": 5.580720078493037,
+  "plates": [
+    {
+      "file": "name-puzzle-lily-plate1.stl",
+      "placements": [
+        {
+          "kind": "base",
+          "index": 0,
+          "rot": 0,
+          "tx": 6.59365188220778,
+          "ty": 90.3907356402568,
+          "rect": [
+            6.59365188220778,
+            90.3907356402568,
+            189.60781055201804,
+            206.02789423662807
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 0,
+          "rot": 0,
+          "tx": 186.77871134282327,
+          "ty": 129.82789423662808,
+          "rect": [
+            194.60781055201804,
+            129.82789423662808,
+            243.40634811779222,
+            206.02789423662807
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 1,
+          "rot": 0,
+          "tx": -0.9737847170266649,
+          "ty": 3.9721057633719425,
+          "rect": [
+            6.59365188220778,
+            3.9721057633719425,
+            24.86078044108389,
+            85.3907356402568
+          ]
+        }
+      ]
+    },
+    {
+      "file": "name-puzzle-lily-plate2.stl",
+      "placements": [
+        {
+          "kind": "letter",
+          "index": 2,
+          "rot": 0,
+          "tx": 77.09345641481421,
+          "ty": 63.2467282074071,
+          "rect": [
+            85.44434165210629,
+            63.2467282074071,
+            102.14534253077878,
+            146.7532717925929
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 3,
+          "rot": 0,
+          "tx": 107.6671285588761,
+          "ty": 93.51801379616819,
+          "rect": [
+            107.14534253077878,
+            68.98791370830094,
+            164.5556583478937,
+            146.7532717925929
+          ]
+        }
+      ]
+    }
+  ],
+  "timings": {
+    "letters": 261,
+    "base": 223,
+    "plates": 1,
+    "total": 541
+  },
+  "grams": 93.9597337649265,
+  "warnings": [],
+  "notes": [
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 160.0 cm3, 0.2 s).",
+    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 24.7 cm3, 0.0 s)."
+  ]
+}

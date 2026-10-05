@@ -1,0 +1,92 @@
+[
+  {
+    "label": "Mia (First capital, 2 in, Bambu A1)",
+    "timings": {
+      "letters": 245,
+      "base": 369,
+      "plates": 16,
+      "total": 763
+    },
+    "base": {
+      "width": 130.34765551155704,
+      "depth": 62.99164172874247,
+      "thickness": 8
+    },
+    "notes": [
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 73.1 cm3, 0.3 s)."
+    ]
+  },
+  {
+    "label": "EMMA (ALL CAPS, 3 in, Bambu A1)",
+    "timings": {
+      "letters": 162,
+      "base": 225,
+      "plates": 12,
+      "total": 446
+    },
+    "base": {
+      "width": 330.6951394016793,
+      "depth": 86.02399999999999,
+      "thickness": 8
+    },
+    "notes": [
+      "On Bambu A1 the app blocks this build: status \"too-big\", offers 2 in instead.",
+      "Rendered on a custom 351 x 400 mm bed to test the geometry and timing.",
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 259.1 cm3, 0.2 s)."
+    ]
+  },
+  {
+    "label": "Jiggy (First capital, 2.5 in, Bambu A1)",
+    "timings": {
+      "letters": 239,
+      "base": 435,
+      "plates": 8,
+      "total": 738
+    },
+    "base": {
+      "width": 229.91379812394368,
+      "depth": 95.8920091938061,
+      "thickness": 8
+    },
+    "notes": [
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 193.5 cm3, 0.4 s)."
+    ]
+  },
+  {
+    "label": "Bartholomew (First capital, 3 in, Bambu A1)",
+    "timings": {
+      "letters": 562,
+      "base": 880,
+      "plates": 10,
+      "total": 1511
+    },
+    "base": {
+      "width": 686.9955381236149,
+      "depth": 92.41203445289167,
+      "thickness": 8
+    },
+    "notes": [
+      "On Bambu A1 the app blocks this build: status \"nothing-fits\", base would be 687 mm wide (462 mm at 2 in).",
+      "Rendered on a custom 707 x 400 mm bed to test the geometry and timing.",
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 564.7 cm3, 0.8 s)."
+    ]
+  },
+  {
+    "label": "Lily (First capital, 3 in, Prusa MK4)",
+    "timings": {
+      "letters": 261,
+      "base": 223,
+      "plates": 1,
+      "total": 541
+    },
+    "base": {
+      "width": 183.01415866981026,
+      "depth": 115.63715859637126,
+      "thickness": 8
+    },
+    "notes": [
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 160.0 cm3, 0.2 s).",
+      ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 24.7 cm3, 0.0 s)."
+    ]
+  }
+]

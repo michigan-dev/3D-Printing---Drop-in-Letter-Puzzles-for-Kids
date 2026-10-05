@@ -1,0 +1,134 @@
+{
+  "text": "Mia",
+  "label": "Mia (First capital, 2 in, Bambu A1)",
+  "bed": {
+    "id": "a1",
+    "label": "Bambu A1",
+    "width": 256,
+    "depth": 256
+  },
+  "params": {
+    "letter_height": 50.8,
+    "letter_thickness": 8,
+    "pocket_depth": 5,
+    "base_floor": 3,
+    "fit_clearance": 0.3,
+    "lead_in": 0.5,
+    "lead_in_steps": 5,
+    "side_margin": 2,
+    "letter_gap": 3,
+    "corner_chamfer": 4,
+    "edge_chamfer": 1,
+    "bottom_chamfer": 0.4,
+    "corner_min_wall": 1.2,
+    "part_spacing": 5,
+    "bed_margin": 3,
+    "base_thickness": 8
+  },
+  "base": {
+    "width": 130.34765551155704,
+    "depth": 62.99164172874247,
+    "thickness": 8
+  },
+  "baselineY": 4.911669177624775,
+  "fontSize": 51.306394109864364,
+  "letters": [
+    {
+      "ch": "M",
+      "x": -1.3087588121740694,
+      "y": 4.911669177624775
+    },
+    {
+      "ch": "i",
+      "x": 63.2346849780353,
+      "y": 4.911669177624775
+    },
+    {
+      "ch": "a",
+      "x": 85.50319921353972,
+      "y": 4.911669177624775
+    }
+  ],
+  "margins": {
+    "left": 2,
+    "right": 2,
+    "bottom": 2.241,
+    "top": 2
+  },
+  "grow": {
+    "top": 0,
+    "bottom": 0.241
+  },
+  "minWall": 8.122647964692934,
+  "cornerWall": 1.2002823763076462,
+  "plates": [
+    {
+      "file": "name-puzzle-mia.stl",
+      "placements": [
+        {
+          "kind": "base",
+          "index": 0,
+          "rot": 0,
+          "tx": 3.987198574097363,
+          "ty": 96.50417913562876,
+          "rect": [
+            3.987198574097363,
+            96.50417913562876,
+            134.3348540856544,
+            159.49582086437124
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 0,
+          "rot": 0,
+          "tx": 134.1154546128579,
+          "ty": 108.69582086437123,
+          "rect": [
+            139.3348540856544,
+            108.69582086437123,
+            192.56985555010857,
+            159.49582086437124
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 1,
+          "rot": 0,
+          "tx": 192.52489781728562,
+          "ty": 105.21673427978132,
+          "rect": [
+            197.56985555010857,
+            105.21673427978132,
+            209.74794125602597,
+            159.49582086437124
+          ]
+        },
+        {
+          "kind": "letter",
+          "index": 2,
+          "rot": 0,
+          "tx": 211.26834160749496,
+          "ty": 123.3094210986839,
+          "rect": [
+            214.74794125602597,
+            122.4397777185217,
+            252.01280142590264,
+            159.49582086437124
+          ]
+        }
+      ]
+    }
+  ],
+  "timings": {
+    "letters": 245,
+    "base": 369,
+    "plates": 16,
+    "total": 763
+  },
+  "grams": 42.78757720429,
+  "warnings": [],
+  "notes": [
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 73.1 cm3, 0.3 s)."
+  ]
+}
