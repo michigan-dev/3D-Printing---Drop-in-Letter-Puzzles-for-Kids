@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Name Puzzle Maker: print a drop-in letter puzzle</title>
+  <meta name="description" content="Type a child's name and download a print-ready STL of a drop-in letter puzzle for your Bambu A1 or Prusa MK4. Free, runs in your browser.">
+  <meta name="theme-color" content="#faf6f0">
+  <meta name="color-scheme" content="light">
+  <!-- Open Graph: replace YOUR-GITHUB-USER with your GitHub user name once deployed. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Name Puzzle Maker">
+  <meta property="og:description" content="Type a word, print a puzzle. A tray with a pocket for each letter, ready for your Bambu or Prusa. Great for teaching kids how to spell.">
+  <meta property="og:url" content="https://YOUR-GITHUB-USER.github.io/name-puzzle-maker/">
+  <meta property="og:image" content="https://YOUR-GITHUB-USER.github.io/name-puzzle-maker/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A cream tray with the name Emma in colourful drop-in letters">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/Andika-Bold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <!-- three.js 0.186.1, pinned. The minified module imports the unminified core
+       (1.4 MB), so the map points that import at the minified core instead. -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.module.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.core.js": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.core.min.js"
+      },
+      "integrity": {
+        "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.module.min.js": "sha512-5y1OuWCUVXtYlPOwdMCvNr/Scu/rs2aBbVxO5q1Du9DzLe7X0QpPf1yxAV839cwp7ZqIDv/UrCm0O2oXxM+rMA==",
+        "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.1/three.core.min.js": "sha512-XHAcLGgLlaKvTJVfBh76iqQUVHJhHbsu+g/JhY0gQBrpYkg+L1MbYckDdUXkh4D/tsp/mVoPi+Art8oxizfddA=="
+      }
+    }
+  </script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the puzzle maker</a>
+  <header class="site-header">
+    <div class="logo" aria-hidden="true">N</div>
+    <p class="site-title">Name Puzzle Maker</p>
+  </header>
+
+  <main id="main">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Type a word, print a puzzle.</h1>
+        <p class="sub">Great for teaching kids how to spell.</p>
+      </div>
+      <ol class="steps" aria-label="Progress">
+        <li data-step="type" aria-current="step"><span>1</span> Type</li>
+        <li data-step="tune"><span>2</span> Tune</li>
+        <li data-step="print"><span>3</span> Print</li>
+      </ol>
+    </section>
+
+    <div class="workbench">
+      <form class="card controls" id="controls" novalidate>
+        <div class="live-strip" id="live-strip" aria-hidden="true"></div>
+
+        <div class="field">
+          <label class="label" for="name">Word or name</label>
+          <div class="name-box" id="name-box">
+            <input id="name" name="name" type="text" autocomplete="off" autocapitalize="words" spellcheck="false"
+                   enterkeyhint="done" maxlength="40" placeholder="Emma" aria-describedby="name-help name-error">
+            <span class="counter" id="counter" aria-hidden="true">0/12</span>
+          </div>
+          <p class="help" id="name-help" aria-live="polite">Letters A–Z only. Spaces, numbers and symbols are removed.</p>
+          <p class="help error" id="name-error" role="alert" hidden></p>
+        </div>
+
+        <fieldset class="field">
+          <legend class="label">Letter style</legend>
+          <div class="segmented big" role="radiogroup" aria-label="Letter style">
+            <label><input type="radio" name="caseStyle" value="caps"><span id="case-caps">EMMA</span></label>
+            <label><input type="radio" name="caseStyle" value="first" checked><span id="case-first">Emma</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <div class="label-row">
+            <label class="label" for="height">Letter height</label>
+            <output id="height-out" for="height"><b>2.0 in</b> · 50.8 mm</output>
+          </div>
+          <input id="height" name="height" type="range" min="2" max="3" step="0.25" value="2"
+                 aria-valuetext="2 inches, 50.8 millimetres" aria-describedby="height-hint">
+          <div class="ticks" aria-hidden="true"><span>2.0</span><span>2.25</span><span>2.5</span><span>2.75</span><span>3.0 in</span></div>
+          <p class="sr-only" id="height-hint">Height of the capital letters. Lowercase letters keep their natural size.</p>
+        </div>
+
+        <fieldset class="field">
+          <legend class="label">Printer</legend>
+          <div class="printers">
+            <label class="printer"><input type="radio" name="printer" value="a1" checked><span class="p-name">Bambu A1</span><span class="p-bed">256×256</span></label>
+            <label class="printer"><input type="radio" name="printer" value="mk4"><span class="p-name">Prusa MK4</span><span class="p-bed">250×210</span></label>
+            <label class="printer"><input type="radio" name="printer" value="custom"><span class="p-name">Custom</span><span class="p-bed">W×D mm</span></label>
+          </div>
+          <div class="custom-bed" id="custom-bed" hidden>
+            <div class="mini">
+              <label for="bed-w">Bed width (mm)</label>
+              <input id="bed-w" type="number" inputmode="decimal" min="100" max="1000" step="1" value="256">
+            </div>
+            <div class="mini">
+              <label for="bed-d">Bed depth (mm)</label>
+              <input id="bed-d" type="number" inputmode="decimal" min="100" max="1000" step="1" value="256">
+            </div>
+          </div>
+        </fieldset>
+
+        <details class="advanced" id="advanced">
+          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 0.3 · 8 / 5 mm · chamfers</span></summary>
+          <div class="adv-grid">
+            <div class="mini">
+              <label for="fit_clearance">Fit clearance (mm per side)</label>
+              <input id="fit_clearance" data-param type="number" inputmode="decimal" min="0.1" max="0.6" step="0.05" value="0.3" aria-describedby="note-fit_clearance fit-hint">
+              <p class="clamp-note" id="note-fit_clearance" hidden></p>
+            </div>
+            <div class="mini">
+              <label for="letter_thickness">Letter thickness (mm)</label>
+              <input id="letter_thickness" data-param type="number" inputmode="decimal" min="4" max="15" step="0.5" value="8" aria-describedby="note-letter_thickness">
+              <p class="clamp-note" id="note-letter_thickness" hidden></p>
+            </div>
+            <div class="mini">
+              <label for="pocket_depth">Pocket depth (mm)</label>
+              <input id="pocket_depth" data-param type="number" inputmode="decimal" min="2" max="10" step="0.5" value="5" aria-describedby="note-pocket_depth">
+              <p class="clamp-note" id="note-pocket_depth" hidden></p>
+            </div>
+            <div class="mini">
+              <label for="corner_chamfer">Corner chamfer (mm)</label>
+              <input id="corner_chamfer" data-param type="number" inputmode="decimal" min="1" max="15" step="0.5" value="4" aria-describedby="note-corner_chamfer">
+              <p class="clamp-note" id="note-corner_chamfer" hidden></p>
+            </div>
+            <div class="mini wide">
+              <label for="edge_chamfer">Top edge chamfer (mm)</label>
+              <input id="edge_chamfer" data-param type="number" inputmode="decimal" min="0" max="1.1" step="0.1" value="1" aria-describedby="note-edge_chamfer">
+              <p class="clamp-note" id="note-edge_chamfer" hidden></p>
+            </div>
+          </div>
+          <p class="hint" id="fit-hint">Tight fit 0.2 · default 0.3 · loose 0.4 mm</p>
+          <button type="button" class="link-btn" id="reset-advanced">Reset defaults</button>
+        </details>
+
+        <div class="build-bar" id="build-bar">
+          <button type="submit" class="btn primary big" id="build">Build my puzzle</button>
+          <p class="help build-reason" id="build-reason" hidden></p>
+        </div>
+      </form>
+
+      <section class="results" aria-label="Your puzzle">
+        <div class="preview-panel">
+          <div class="preview-top">
+            <div class="segmented small" role="radiogroup" aria-label="Preview view">
+              <label><input type="radio" name="view" value="assembled" checked><span>Assembled</span></label>
+              <label><input type="radio" name="view" value="plate"><span>Print layout</span></label>
+            </div>
+            <p class="status-pill" id="status" role="status">Live preview</p>
+          </div>
+          <div class="viewport" id="viewport">
+            <div class="zoom-btns">
+              <button type="button" class="icon-btn" id="zoom-in" aria-label="Zoom in">+</button>
+              <button type="button" class="icon-btn" id="zoom-out" aria-label="Zoom out">−</button>
+            </div>
+            <p class="viewport-msg" id="viewport-msg" hidden></p>
+            <div class="building" id="building" hidden>
+              <div class="building-card">
+                <h2>Building your puzzle…</h2>
+                <p>Usually 5–20 seconds. You can keep adjusting. We'll rebuild when you're ready.</p>
+                <div class="progress" aria-hidden="true"><span></span></div>
+                <ol class="build-steps">
+                  <li data-step="letters"><span>Tracing letter outlines</span></li>
+                  <li data-step="base"><span>Cutting pockets with <span id="step-clearance">0.3</span> mm clearance</span></li>
+                  <li data-step="plates"><span>Laying out the build plate</span></li>
+                </ol>
+                <button type="button" class="btn secondary" id="cancel">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <div class="preview-foot">
+            <span id="foot-left">Letters seated in the base · 3 mm stand proud for small hands</span>
+            <span class="foot-right">Drag to rotate · scroll to zoom</span>
+          </div>
+        </div>
+
+        <div class="notice" id="fit-notice" hidden></div>
+
+        <div class="stats" id="stats" hidden>
+          <div class="stat"><p class="stat-label">Base size</p><p class="stat-value" id="stat-base">–</p><p class="stat-sub" id="stat-base-in">–</p></div>
+          <div class="stat"><p class="stat-label">Plates</p><p class="stat-value" id="stat-plates">–</p><p class="stat-sub" id="stat-plates-sub">–</p></div>
+          <div class="stat"><p class="stat-label">Filament (rough guide)</p><p class="stat-value" id="stat-grams">–</p><p class="stat-sub">PLA, 15% infill</p></div>
+        </div>
+
+        <div class="downloads" id="downloads" hidden>
+          <p class="safety"><strong>Safety:</strong> letters are toy-sized parts. For ages 3+ with adult supervision. Check prints for sharp edges or stringing before giving them to a child.</p>
+          <div class="dl-buttons" id="dl-buttons"></div>
+          <p class="stale-note" id="stale-note" hidden>You changed a setting. Rebuild to update your files.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="tips" aria-label="Tips">
+      <div>
+        <h2>Made for early readers</h2>
+        <p>Andika letterforms, with the dots on i and j joined so every letter prints as one solid piece.</p>
+      </div>
+      <div>
+        <h2>Prints flat, in one go</h2>
+        <p>Base and letters are laid out flat on your bed. If they don't fit, you get extra plates and a ZIP.</p>
+      </div>
+      <div>
+        <h2>Test one letter first</h2>
+        <p>Print one letter and its pocket to check the fit. Use 0.2 mm for snug or 0.4 mm for loose.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <!-- Set your portfolio link here. -->
+    <p>Made by <a href="https://github.com/YOUR-GITHUB-USER" id="maker-link">Brian Aberle</a></p>
+    <!-- Optional: put your order page URL in href and remove "hidden" to show the order link. -->
+    <p id="order-wrap" hidden>Want it printed for you? <a href="" id="order-link">Order here</a></p>
+    <p class="credits">Font: <a href="fonts/OFL.txt">Andika</a> by SIL International (OFL). Engine: <a href="vendor/openscad/README.md">OpenSCAD</a> (GPL).</p>
+  </footer>
+</body>
+</html>
