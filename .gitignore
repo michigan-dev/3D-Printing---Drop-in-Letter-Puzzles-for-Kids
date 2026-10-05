@@ -1,0 +1,6 @@
+# Rendered test meshes (regenerate with: node tests/render.mjs)
+tests/output/*.stl
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
