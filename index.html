@@ -49,11 +49,6 @@
         <h1 id="page-title">Type a word, print a puzzle.</h1>
         <p class="sub">Great for teaching kids how to spell.</p>
       </div>
-      <ol class="steps" aria-label="Progress">
-        <li data-step="type" aria-current="step"><span>1</span> Type</li>
-        <li data-step="tune"><span>2</span> Tune</li>
-        <li data-step="print"><span>3</span> Print</li>
-      </ol>
     </section>
 
     <div class="workbench">
@@ -82,11 +77,13 @@
         <div class="field">
           <div class="label-row">
             <label class="label" for="height">Letter height</label>
-            <output id="height-out" for="height"><b>2.0 in</b> · 50.8 mm</output>
+            <output id="height-out" for="height"><b>14 mm</b> · 0.55 in</output>
           </div>
-          <input id="height" name="height" type="range" min="2" max="3" step="0.25" value="2"
-                 aria-valuetext="2 inches, 50.8 millimetres" aria-describedby="height-hint">
-          <div class="ticks" aria-hidden="true"><span>2.0</span><span>2.25</span><span>2.5</span><span>2.75</span><span>3.0 in</span></div>
+          <input id="height" name="height" type="range" min="10" max="76.2" step="0.2" value="14"
+                 aria-valuetext="14 millimetres, 0.55 inches" aria-describedby="height-hint">
+          <div class="ticks" aria-hidden="true">
+            <span style="left:0%">10 mm</span><span style="left:23.26%">1 in</span><span style="left:61.63%">2 in</span><span style="left:100%">3 in</span>
+          </div>
           <p class="sr-only" id="height-hint">Height of the capital letters. Lowercase letters keep their natural size.</p>
         </div>
 
@@ -132,10 +129,15 @@
               <input id="corner_chamfer" data-param type="number" inputmode="decimal" min="1" max="15" step="0.5" value="4" aria-describedby="note-corner_chamfer">
               <p class="clamp-note" id="note-corner_chamfer" hidden></p>
             </div>
-            <div class="mini wide">
-              <label for="edge_chamfer">Top edge chamfer (mm)</label>
+            <div class="mini">
+              <label for="edge_chamfer">Base edge chamfer (mm)</label>
               <input id="edge_chamfer" data-param type="number" inputmode="decimal" min="0" max="1.1" step="0.1" value="1" aria-describedby="note-edge_chamfer">
               <p class="clamp-note" id="note-edge_chamfer" hidden></p>
+            </div>
+            <div class="mini">
+              <label for="letter_chamfer">Letter edge chamfer (mm)</label>
+              <input id="letter_chamfer" data-param type="number" inputmode="decimal" min="0" max="1" step="0.1" value="0.6" aria-describedby="note-letter_chamfer">
+              <p class="clamp-note" id="note-letter_chamfer" hidden></p>
             </div>
           </div>
           <p class="hint" id="fit-hint">Tight fit 0.2 · default 0.3 · loose 0.4 mm</p>
@@ -192,7 +194,7 @@
         </div>
 
         <div class="downloads" id="downloads" hidden>
-          <p class="safety"><strong>Safety:</strong> letters are toy-sized parts. For ages 3+ with adult supervision. Check prints for sharp edges or stringing before giving them to a child.</p>
+          <p class="safety"><strong>Safety:</strong> letters are toy-sized small parts: a choking hazard for children under 3. For ages 3+ with adult supervision. Check prints for sharp edges or stringing before giving them to a child.</p>
           <div class="dl-buttons" id="dl-buttons"></div>
           <p class="stale-note" id="stale-note" hidden>You changed a setting. Rebuild to update your files.</p>
         </div>
@@ -202,15 +204,11 @@
     <section class="tips" aria-label="Tips">
       <div>
         <h2>Made for early readers</h2>
-        <p>Andika letterforms, with the dots on i and j joined so every letter prints as one solid piece.</p>
+        <p>Andika letterforms, with the dots on i and j joined by a 5 mm bar so every letter prints as one solid piece, and softly chamfered edges.</p>
       </div>
       <div>
         <h2>Prints flat, in one go</h2>
-        <p>Base and letters are laid out flat on your bed. If they don't fit, you get extra plates and a ZIP.</p>
-      </div>
-      <div>
-        <h2>Test one letter first</h2>
-        <p>Print one letter and its pocket to check the fit. Use 0.2 mm for snug or 0.4 mm for loose.</p>
+        <p>Base and letters are laid out flat on your bed. A very long name gets its base turned 45° to fit, with the letters as a separate STL, plus a ZIP of everything.</p>
       </div>
     </section>
   </main>

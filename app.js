@@ -1,14 +1,14 @@
 // Name Puzzle Maker: page controller. Reads the form, keeps a live layout
 // and preview up to date, sends builds to the OpenSCAD worker and offers the
 // resulting files for download.
-import { prepareJob, fileStem, plateFileName, GLYPH_DATA } from './lib/job.js';
-import { DEFAULTS, MAX_LETTERS, PRINTERS, sanitizeName, inchesToMm } from './lib/layout.js';
+import { prepareJob, fileStem, GLYPH_DATA } from './lib/job.js';
+import { DEFAULTS, MAX_LETTERS, PRINTERS, HEIGHT_MIN_MM, HEIGHT_MAX_MM, sanitizeName, inchesToMm } from './lib/layout.js';
 import { makeZip } from './lib/zip.js';
 import { createViewer, LETTER_COLORS } from './lib/viewer.js';
 
 const $ = (id) => document.getElementById(id);
 const form = $('controls');
-const ADV_KEYS = ['fit_clearance', 'letter_thickness', 'pocket_depth', 'corner_chamfer', 'edge_chamfer'];
+const ADV_KEYS = ['fit_clearance', 'letter_thickness', 'pocket_depth', 'corner_chamfer', 'edge_chamfer', 'letter_chamfer'];
 const EXAMPLE_NAME = 'Emma';
 // Darker letter shades for text on light backgrounds (AA for large text).
 const TEXT_COLORS = ['#af5742', '#946d00', '#17895b', '#007eb0', '#8560ac'];
@@ -33,7 +33,7 @@ function readInputs() {
   return {
     rawName: $('name').value,
     caseStyle: form.elements.caseStyle.value,
-    heightIn: Number($('height').value),
+    heightMm: Number($('height').value),
     printer: form.elements.printer.value,
     customBed: { width: $('bed-w').value, depth: $('bed-d').value },
     advanced,
@@ -42,8 +42,7 @@ function readInputs() {
 
 const jobKey = (j) => (j && j.status === 'ready' ? JSON.stringify([j.text, j.params, j.bed]) : '');
 const fmt = (v, d = 1) => String(+v.toFixed(d));
-const inLabel = (inches) => (Number.isInteger(inches) ? inches.toFixed(1) : String(inches));
-const mmOf = (inches) => fmt(Math.round(inches * 254) / 10);
+const inOf = (mm) => (mm / 25.4).toFixed(2);
 
 // --------------------------------------------------------------- update
 
@@ -104,9 +103,9 @@ function renderCaseLabels() {
 
 function renderHeight() {
   const v = Number($('height').value);
-  $('height-out').innerHTML = `<b>${inLabel(v)} in</b> · ${mmOf(v)} mm`;
-  $('height').setAttribute('aria-valuetext', `${v} inches, ${mmOf(v)} millimetres`);
-  $('height').style.setProperty('--fill', `${(v - 2) * 100}%`);
+  $('height-out').innerHTML = `<b>${fmt(v)} mm</b> · ${inOf(v)} in`;
+  $('height').setAttribute('aria-valuetext', `${fmt(v)} millimetres, ${inOf(v)} inches`);
+  $('height').style.setProperty('--fill', `${((v - HEIGHT_MIN_MM) / (HEIGHT_MAX_MM - HEIGHT_MIN_MM)) * 100}%`);
 }
 
 function renderPrinter() {
@@ -178,15 +177,14 @@ function renderNotice() {
     box.append(Object.assign(el('div', '', 'actions'), {}));
     box.lastChild.append(button('Try again', 'primary', () => startBuild()));
   } else if (j.status === 'too-big') {
-    const over = Math.ceil(Math.max(j.plan.overWidth, j.plan.overDepth));
-    const what = j.plan.overWidth > 0 ? 'too wide' : 'too deep';
+    const over = Math.ceil(j.plan.over);
     box.append(
-      el('h2', `At ${inLabel(j.heightIn)} in, “${j.text}” is ${over} mm ${what} for the ${j.bed.label}`),
-      Object.assign(el('p'), { innerHTML: `The largest letter height that fits is <strong>${inLabel(j.maxHeightIn)} in (${mmOf(j.maxHeightIn)} mm)</strong>. We won't make a file that can't print.` }),
+      el('h2', `At ${fmt(j.heightMm)} mm, “${j.text}” is ${over} mm too big for the ${j.bed.label}`),
+      Object.assign(el('p'), { innerHTML: `Even turned 45° on the bed, the base doesn't fit. The largest letter height that fits is <strong>${fmt(j.maxHeightMm)} mm (${inOf(j.maxHeightMm)} in)</strong>. We won't make a file that can't print.` }),
     );
     const actions = el('div', '', 'actions');
-    actions.append(button(`Use ${inLabel(j.maxHeightIn)} in, the max that fits`, 'primary', () => {
-      $('height').value = j.maxHeightIn;
+    actions.append(button(`Use ${fmt(j.maxHeightMm)} mm, the max that fits`, 'primary', () => {
+      $('height').value = j.maxHeightMm;
       scheduleUpdate(true);
       $('height').focus();
     }));
@@ -197,7 +195,7 @@ function renderNotice() {
   } else if (j.status === 'nothing-fits') {
     box.append(
       el('p', 'Nothing fits', 'kicker'),
-      el('h2', `“${j.text}” needs ≈ ${Math.round(j.widthAtMin)} mm, even at the smallest size (2.0 in)`),
+      el('h2', `“${j.text}” needs ≈ ${Math.round(j.widthAtMin)} mm, even at the smallest size (${fmt(j.minHeightMm)} mm)`),
       el('p', `That is wider than the ${j.bed.label} bed (${j.bed.width} mm). Try a shorter name or a nickname, or set a larger custom bed.`),
     );
     const actions = el('div', '', 'actions');
@@ -207,13 +205,18 @@ function renderNotice() {
     box.append(actions);
   } else if (j.status === 'ready' && j.plan.plates.length > 1) {
     box.classList.add('info');
-    box.append(el('p', `${plateSummary(j)} Each plate is its own STL, and you can download them all as a ZIP.`));
+    const turned = isTurned(j)
+      ? `“${j.text}” is long for the ${j.bed.label}, so the base is turned 45° to fit and gets a plate to itself. The letters go on their own plate. `
+      : '';
+    box.append(el('p', `${turned}${plateSummary(j)} Each plate is its own STL, and you can download them all as a ZIP.`));
   } else {
     box.hidden = true;
     return;
   }
   box.hidden = false;
 }
+
+const isTurned = (j) => j.plan.plates[0].placements.some((q) => q.kind === 'base' && q.rot === 45);
 
 function plateSummary(j) {
   const parts = j.plan.plates.map((pl) => {
@@ -243,11 +246,6 @@ function renderBuildButton() {
 
 function renderPhase() {
   const stale = isStale();
-  const phase = state.building ? 'tune' : state.built && !stale ? 'print' : state.built ? 'tune' : 'type';
-  for (const li of document.querySelectorAll('.steps li')) {
-    if (li.dataset.step === phase) li.setAttribute('aria-current', 'step');
-    else li.removeAttribute('aria-current');
-  }
   const status = $('status');
   status.className = 'status-pill';
   if (state.building) {
@@ -317,7 +315,7 @@ function renderResults() {
   const plates = job.plan.plates.length;
   $('stat-plates').textContent = String(plates);
   const short = job.bed.id === 'custom' ? 'your bed' : `the ${job.bed.label.split(' ')[1]}`;
-  $('stat-plates-sub').textContent = plates === 1 ? `Base + ${job.text.length} letters fit ${short}` : plateSummary(job).replace(/\.$/, '');
+  $('stat-plates-sub').textContent = plates === 1 ? `Base + ${job.text.length} letters fit ${short}` : `${isTurned(job) ? 'Base turned 45°. ' : ''}${plateSummary(job).replace(/\.$/, '')}`;
   $('stat-grams').textContent = `≈ ${Math.round(result.grams)} g PLA`;
 
   const stale = isStale();
@@ -336,22 +334,15 @@ function renderDownloadButtons() {
   const stem = fileStem(job.text);
   box.append(button('.scad source', 'secondary', () => save(`${stem}.scad`, job.scad, 'text/plain')));
   const n = result.plates.length;
-  if (n === 1) {
-    const name = plateFileName(job.text, 1, 1);
-    const b = button('Download STL', 'primary', () => save(name, result.plates[0].stl, 'model/stl'));
-    b.append(el('span', name, 'fname'));
+  for (const pl of result.plates) {
+    const b = button(pl.label, n === 1 ? 'primary' : 'secondary', () => save(pl.file, pl.stl, 'model/stl'));
+    b.append(el('span', pl.file, 'fname'));
     box.append(b);
-  } else {
-    for (const pl of result.plates) {
-      const name = plateFileName(job.text, pl.number, n);
-      const b = button(`Plate ${pl.number} STL`, 'secondary', () => save(name, pl.stl, 'model/stl'));
-      b.append(el('span', name, 'fname'));
-      box.append(b);
-    }
+  }
+  if (n > 1) {
     const zipName = `${stem}.zip`;
     const z = button('Download all (ZIP)', 'primary', () => {
-      const files = result.plates.map((pl) => ({ name: plateFileName(job.text, pl.number, n), data: pl.stl }));
-      save(zipName, makeZip(files), 'application/zip');
+      save(zipName, makeZip(result.plates.map((pl) => ({ name: pl.file, data: pl.stl }))), 'application/zip');
     });
     z.append(el('span', zipName, 'fname'));
     box.append(z);
