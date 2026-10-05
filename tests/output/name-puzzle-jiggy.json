@@ -1,6 +1,6 @@
 {
   "text": "Jiggy",
-  "label": "Jiggy (First capital, 2.5 in, Bambu A1)",
+  "label": "Jiggy (First capital, 63.5 mm / 2.50 in, Bambu A1)",
   "bed": {
     "id": "a1",
     "label": "Bambu A1",
@@ -16,6 +16,10 @@
     "lead_in": 0.5,
     "lead_in_steps": 5,
     "side_margin": 2,
+    "letter_chamfer": 0.6,
+    "letter_bottom_chamfer": 0.4,
+    "chamfer_step": 0.1,
+    "bridge_width": 5,
     "letter_gap": 3,
     "corner_chamfer": 4,
     "edge_chamfer": 1,
@@ -157,14 +161,14 @@
     }
   ],
   "timings": {
-    "letters": 239,
-    "base": 435,
-    "plates": 8,
-    "total": 738
+    "letters": 837,
+    "base": 504,
+    "plates": 19,
+    "total": 1421
   },
-  "grams": 101.82672991795334,
+  "grams": 101.72103242322662,
   "warnings": [],
   "notes": [
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 193.5 cm3, 0.4 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 193.0 cm3, 1.1 s)."
   ]
 }

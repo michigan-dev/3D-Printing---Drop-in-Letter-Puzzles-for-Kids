@@ -1,6 +1,6 @@
 {
   "text": "Lily",
-  "label": "Lily (First capital, 3 in, Prusa MK4)",
+  "label": "Lily (First capital, 76.2 mm / 3.00 in, Prusa MK4)",
   "bed": {
     "id": "mk4",
     "label": "Prusa MK4",
@@ -16,6 +16,10 @@
     "lead_in": 0.5,
     "lead_in_steps": 5,
     "side_margin": 2,
+    "letter_chamfer": 0.6,
+    "letter_bottom_chamfer": 0.4,
+    "chamfer_step": 0.1,
+    "bridge_width": 5,
     "letter_gap": 3,
     "corner_chamfer": 4,
     "edge_chamfer": 1,
@@ -112,7 +116,7 @@
       ]
     },
     {
-      "file": "name-puzzle-lily-plate2.stl",
+      "file": "name-puzzle-lily-letters.stl",
       "placements": [
         {
           "kind": "letter",
@@ -144,15 +148,15 @@
     }
   ],
   "timings": {
-    "letters": 261,
-    "base": 223,
-    "plates": 1,
-    "total": 541
+    "letters": 564,
+    "base": 222,
+    "plates": 7,
+    "total": 911
   },
-  "grams": 93.9597337649265,
+  "grams": 93.81451071868301,
   "warnings": [],
   "notes": [
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 160.0 cm3, 0.2 s).",
-    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 24.7 cm3, 0.0 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 159.5 cm3, 0.4 s).",
+    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 24.6 cm3, 0.2 s)."
   ]
 }

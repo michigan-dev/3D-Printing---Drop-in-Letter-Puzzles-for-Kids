@@ -2,16 +2,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  sanitizeName, validateName, applyCase, clampHeightMm, snapHeightIn, inchesToMm, resolveParams,
-  maxEdgeChamfer, computeLayout, planPlates, bedFor, maxFittingHeightIn, offsetContour, DEFAULTS,
+  sanitizeName, validateName, applyCase, clampHeightMm, inchesToMm, resolveParams,
+  maxEdgeChamfer, computeLayout, planPlates, bedFor, maxFittingHeightMm, offsetContour, DEFAULTS,
+  HEIGHT_MIN_MM, HEIGHT_MAX_MM, HEIGHT_STEP_MM, HEIGHT_DEFAULT_MM, glyphBBox, fontSizeFor,
 } from '../lib/layout.js';
 import { prepareJob } from '../lib/job.js';
 import * as glyphData from '../lib/glyphs.js';
 
-const layoutFor = (text, inches = 2, user = {}) => {
-  const { params } = resolveParams({ ...user, letter_height: inchesToMm(inches) });
+const layoutAtMm = (text, mm, user = {}) => {
+  const { params } = resolveParams({ ...user, letter_height: mm });
   return { params, layout: computeLayout(text, params, glyphData) };
 };
+const layoutFor = (text, inches = 2, user = {}) => layoutAtMm(text, inchesToMm(inches), user);
 const close = (a, b, tol = 1e-6, msg = '') => assert.ok(Math.abs(a - b) <= tol, `${msg} expected ${b}, got ${a}`);
 
 // ------------------------------------------------------------------ names
@@ -61,20 +63,24 @@ test('case style: ALL CAPS and First letter capital', () => {
 
 // ----------------------------------------------------------------- params
 
-test('height clamps to 50.8-76.2 mm', () => {
-  assert.equal(clampHeightMm(10), 50.8);
-  assert.equal(clampHeightMm(100), 76.2);
+test('height defaults to 14 mm and clamps to 10-76.2 mm', () => {
+  assert.equal(HEIGHT_DEFAULT_MM, 14);
+  assert.equal(DEFAULTS.letter_height, 14);
+  assert.equal(resolveParams().params.letter_height, 14);
+  assert.equal(prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1' }).heightMm, 14);
+  assert.equal(clampHeightMm(2), HEIGHT_MIN_MM);
+  assert.equal(clampHeightMm(500), HEIGHT_MAX_MM);
   assert.equal(clampHeightMm(63.5), 63.5);
-  assert.equal(clampHeightMm('nonsense'), 50.8);
+  assert.equal(clampHeightMm('nonsense'), 14);
   assert.equal(resolveParams({ letter_height: 200 }).params.letter_height, 76.2);
-  assert.equal(resolveParams({ letter_height: 1 }).params.letter_height, 50.8);
+  assert.equal(resolveParams({ letter_height: 1 }).params.letter_height, 10);
 });
 
-test('height slider snaps to 0.25 in steps within 2-3 in', () => {
-  assert.equal(snapHeightIn(2.6), 2.5);
-  assert.equal(snapHeightIn(2.63), 2.75);
-  assert.equal(snapHeightIn(1), 2);
-  assert.equal(snapHeightIn(9), 3);
+test('slider grid (10 mm + 0.2 mm steps) hits 14 mm, 1 in, 2 in and 3 in exactly', () => {
+  for (const mm of [14, 25.4, 50.8, 76.2]) {
+    const k = (mm - HEIGHT_MIN_MM) / HEIGHT_STEP_MM;
+    assert.ok(Math.abs(k - Math.round(k)) < 1e-9, `${mm} mm is off the grid`);
+  }
   assert.equal(inchesToMm(2.5), 63.5);
 });
 
@@ -85,6 +91,19 @@ test('edge chamfer is clamped below side_margin - 0.8 mm, with a note', () => {
   assert.equal(r.params.edge_chamfer, 1.1);
   assert.match(r.notes.edge_chamfer, /Capped at 1\.1 mm/);
   assert.equal(resolveParams({ edge_chamfer: 1 }).notes.edge_chamfer, undefined);
+});
+
+test('letter chamfer: default 0.6 mm is accepted at every height, larger values are capped with a note', () => {
+  for (const mm of [10, 14, 50.8, 76.2]) {
+    const r = resolveParams({ letter_height: mm });
+    assert.equal(r.params.letter_chamfer, 0.6, `${mm} mm`);
+    assert.equal(r.notes.letter_chamfer, undefined);
+  }
+  const big = resolveParams({ letter_height: 14, letter_chamfer: 1 });
+  assert.equal(big.params.letter_chamfer, 0.84);
+  assert.match(big.notes.letter_chamfer, /Capped at 0\.84 mm/);
+  assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 5 }).params.letter_chamfer, 1);
+  assert.equal(DEFAULTS.letter_bottom_chamfer, 0.4);
 });
 
 test('advanced values are clamped to safe ranges', () => {
@@ -137,6 +156,27 @@ test('no pocket-to-pocket wall is under 3 mm (many names, all heights, all clear
   }
 });
 
+test('i and j dot bridges are 5 mm wide, and the pocket and base are sized around them', () => {
+  assert.equal(DEFAULTS.bridge_width, 5);
+  const { params } = resolveParams({});
+  const scale = fontSizeFor(params.letter_height, glyphData.FONT);
+  for (const ch of 'ij') {
+    const g = glyphData.GLYPHS[ch];
+    const stemOnly = glyphBBox({ ...g, bridges: [] }, scale);
+    const [x0, , x1] = glyphBBox(g, scale, 5);
+    assert.ok(x1 - x0 >= 5 - 1e-9, `${ch}: bar makes the letter ${x1 - x0} mm wide`);
+    assert.ok(x1 - x0 > stemOnly[2] - stemOnly[0], `${ch}: wider than the plain letter`);
+  }
+  // "Iji": the opening of each dotted letter spans its bar, margins stay 2 mm and walls >= 3 mm
+  const { layout } = layoutAtMm('ijiji', 14);
+  assert.ok(layout.letters.every((L) => L.bbox[2] - L.bbox[0] >= 5 - 1e-9));
+  for (const side of ['left', 'right', 'top', 'bottom']) close(layout.margins[side], 2, 1e-9, side);
+  assert.ok(layout.minWall >= 3 - 1e-6, `wall ${layout.minWall}`);
+  // a narrower bar gives a narrower base: the base really is sized from the bar
+  const narrow = layoutAtMm('ijiji', 14, { bridge_width: 2 }).layout;
+  assert.ok(layout.base.width > narrow.base.width + 2);
+});
+
 test('letters share one baseline and descenders fit inside the base', () => {
   const { layout, params } = layoutFor('Jiggy', 2.5);
   const ys = new Set(layout.letters.map((L) => L.y));
@@ -183,25 +223,69 @@ test('bed fit: a short name at 2 in fits one Bambu A1 plate', () => {
   assertPlatesValid(plan, bed, params, 3);
 });
 
-test('bed fit: a 12-letter name at 3 in triggers the too-wide warning', () => {
+test('bed fit: a 12-letter name at 3 in triggers the too-big warning with the max height that fits', () => {
   for (const printer of ['a1', 'mk4']) {
     const job = prepareJob({ rawName: 'Christabella', caseStyle: 'first', heightIn: 3, printer });
     assert.equal(job.text.length, 12);
     assert.equal(job.plan.ok, false);
     assert.equal(job.plan.reason, 'base-too-big');
-    assert.ok(job.plan.overWidth > 0);
-    assert.equal(job.status, 'nothing-fits'); // too wide even at 2 in
-    assert.equal(job.maxHeightIn, null);
+    assert.ok(job.plan.over > 0);
+    assert.equal(job.status, 'too-big');
+    assert.ok(job.maxHeightMm >= 10 && job.maxHeightMm < 76.2);
+    const retry = prepareJob({ rawName: 'Christabella', caseStyle: 'first', heightMm: job.maxHeightMm, printer });
+    assert.equal(retry.status, 'ready');
   }
 });
 
-test('bed fit: too wide at 3 in offers the tallest height that fits', () => {
+test('bed fit: nothing fits when even 10 mm letters are too long for the bed', () => {
+  const job = prepareJob({ rawName: 'Christabella', caseStyle: 'first', heightMm: 40, printer: 'custom', customBed: { width: 100, depth: 100 } });
+  assert.equal(job.status, 'nothing-fits');
+  assert.equal(job.maxHeightMm, null);
+  assert.equal(job.minHeightMm, 10);
+  assert.ok(job.widthAtMin > 94);
+});
+
+test('bed fit: too big at 3 in offers the tallest height that fits, and one step more does not', () => {
   const job = prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightIn: 3, printer: 'a1' });
   assert.equal(job.status, 'too-big');
-  assert.equal(job.maxHeightIn, 2);
-  const retry = prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightIn: job.maxHeightIn, printer: 'a1' });
-  assert.equal(retry.status, 'ready');
-  assert.equal(maxFittingHeightIn('Mia', {}, bedFor('a1'), glyphData), 3);
+  assert.ok(job.maxHeightMm > 50 && job.maxHeightMm < 76.2, `max ${job.maxHeightMm}`);
+  const at = (mm) => prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightMm: mm, printer: 'a1', withScad: false }).status;
+  assert.equal(at(job.maxHeightMm), 'ready');
+  assert.equal(at(Math.round((job.maxHeightMm + HEIGHT_STEP_MM) * 10) / 10), 'too-big');
+  assert.equal(maxFittingHeightMm('Mia', {}, bedFor('a1'), glyphData), 76.2);
+});
+
+test('long name: base turned 45 degrees to fit, alone on plate 1; letters on their own plate', () => {
+  const bed = bedFor('a1');
+  const { layout, params } = layoutAtMm('EMMA', 60);
+  assert.ok(layout.base.width > bed.width - 2 * params.bed_margin, 'too long to lie straight');
+  const plan = planPlates(layout, bed, params);
+  assert.equal(plan.ok, true);
+  assert.equal(plan.plates.length, 2);
+  const [one, two] = plan.plates;
+  assert.deepEqual(one.placements.map((q) => [q.kind, q.rot]), [['base', 45]]);
+  assert.equal(one.hasBase, true); assert.equal(one.letterCount, 0);
+  assert.equal(two.hasBase, false); assert.equal(two.letterCount, 4);
+  assertPlatesValid(plan, bed, params, 4);
+  // the same name that fits straight is not turned
+  const small = layoutAtMm('EMMA', 30);
+  const plan2 = planPlates(small.layout, bed, small.params);
+  assert.equal(plan2.plates.length, 1);
+  assert.equal(plan2.plates[0].placements.find((q) => q.kind === 'base').rot, 0);
+  // too big even turned: refused with the size of the miss
+  const huge = layoutAtMm('EMMA', 70);
+  const bad = planPlates(huge.layout, bed, huge.params);
+  assert.equal(bad.ok, false);
+  assert.ok(bad.over > 0);
+});
+
+test('job names the plates: base / letters files for a split, one plain file otherwise', () => {
+  const split = prepareJob({ rawName: 'EMMA', caseStyle: 'caps', heightMm: 60, printer: 'a1', withScad: false });
+  assert.equal(split.status, 'ready');
+  assert.deepEqual(split.plan.plates.map((p) => [p.file, p.label]), [
+    ['name-puzzle-emma-base.stl', 'Base STL'], ['name-puzzle-emma-letters.stl', 'Letters STL']]);
+  const one = prepareJob({ rawName: 'Emma', caseStyle: 'first', printer: 'a1', withScad: false });
+  assert.deepEqual(one.plan.plates.map((p) => p.file), ['name-puzzle-emma.stl']);
 });
 
 test('bed fit: base fits but letters do not -> split across plates', () => {

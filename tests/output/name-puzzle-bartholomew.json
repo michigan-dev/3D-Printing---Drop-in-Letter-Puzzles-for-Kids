@@ -1,6 +1,6 @@
 {
   "text": "Bartholomew",
-  "label": "Bartholomew (First capital, 3 in, Bambu A1)",
+  "label": "Bartholomew (First capital, 76.2 mm / 3.00 in, Bambu A1)",
   "bed": {
     "id": "custom",
     "label": "Custom bed",
@@ -16,6 +16,10 @@
     "lead_in": 0.5,
     "lead_in_steps": 5,
     "side_margin": 2,
+    "letter_chamfer": 0.6,
+    "letter_bottom_chamfer": 0.4,
+    "chamfer_step": 0.1,
+    "bridge_width": 5,
     "letter_gap": 3,
     "corner_chamfer": 4,
     "edge_chamfer": 1,
@@ -265,16 +269,16 @@
     }
   ],
   "timings": {
-    "letters": 562,
-    "base": 880,
-    "plates": 10,
-    "total": 1511
+    "letters": 1898,
+    "base": 844,
+    "plates": 22,
+    "total": 2939
   },
-  "grams": 294.2607156631305,
+  "grams": 294.0943153076529,
   "warnings": [],
   "notes": [
-    "On Bambu A1 the app blocks this build: status \"nothing-fits\", base would be 687 mm wide (462 mm at 2 in).",
+    "On Bambu A1 the app blocks this build: status \"too-big\", offers 34.2 mm instead.",
     "Rendered on a custom 707 x 400 mm bed to test the geometry and timing.",
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 564.7 cm3, 0.8 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 563.8 cm3, 2.7 s)."
   ]
 }

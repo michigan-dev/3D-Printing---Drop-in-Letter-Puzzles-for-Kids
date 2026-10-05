@@ -35,6 +35,18 @@ test('.scad contains the expected parameter values', () => {
   assert.match(value('font_size'), /^letter_height \/ 0\.99\d+$/);
 });
 
+test('.scad has 14 mm default height, letter chamfers and a 5 mm bridge', () => {
+  const def = prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1' }).scad;
+  assert.match(def, /^letter_height = 14;/m);
+  assert.match(def, /^letter_chamfer = 0\.6;/m);
+  assert.match(def, /^letter_bottom_chamfer = 0\.4;/m);
+  assert.match(def, /^bridge_width = 5;/m);
+  assert.match(def, /^chamfer_step = 0\.1;/m);
+  assert.match(def, /offset\(delta = -\(top - \(k \+ 0\.5\) \* top \/ nt\)\) glyph\(ch\)/);
+  assert.match(def, /square\(\[bridge_width, /);
+  assert.doesNotMatch(def, /minkowski/);
+});
+
 test('.scad base size and letter table match the layout', () => {
   const [w, d] = value('base_size').slice(1, -1).split(',').map(Number);
   assert.ok(Math.abs(w - job.layout.base.width) < 1e-4 && Math.abs(d - job.layout.base.depth) < 1e-4);

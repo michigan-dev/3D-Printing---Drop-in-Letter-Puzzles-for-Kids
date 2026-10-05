@@ -39,6 +39,14 @@ edge_chamfer = 1;
 // Bottom perimeter edge, counters elephant's foot.
 bottom_chamfer = 0.4;
 
+/* [Letters] */
+// 45 degree chamfer around the top face of each letter.
+letter_chamfer = 0.6;
+// And around its bottom face (elephant's foot, easier drop-in).
+letter_bottom_chamfer = 0.4;
+// Width of the bar that joins the dot of i and j to its stem.
+bridge_width = 5;
+
 /* [Hidden] */
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
@@ -48,7 +56,10 @@ font = "Andika:style=Bold";
 // text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
 font_size = letter_height / 0.99013;
 text_fn = 48;
-// Cut a little above the top face so pockets never share a face with it.
+// Height of one step when a chamfer is cut as a stack of offsets.
+chamfer_step = 0.1;
+// Cut a little above the top face so pockets never share a face with it
+// (also the overlap between stacked chamfer steps).
 overcut = 0.01;
 
 letters = [
@@ -60,10 +71,10 @@ letters = [
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
-// one piece. [x0, y0, x1, y1] in units of font_size; the bridge is exactly as
-// wide as the stem.
+// one piece. [x0, y0, x1, y1] in units of font_size give the stem's centre line
+// ((x0 + x1) / 2) and the bar's vertical span; the bar is bridge_width wide.
 glyph_bridges = [
-  ["i", [0.1192, 0.4919, 0.312, 0.9393]],
+  ["i", [0.1192, 0.6311, 0.312, 0.8918]],
 ];
 
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
@@ -84,10 +95,30 @@ plates = [
 module glyph(ch) {
   text(ch, size = font_size, font = font, halign = "left", valign = "baseline", $fn = text_fn);
   for (b = [for (e = glyph_bridges) if (e[0] == ch) e[1]])
-    translate([b[0], b[1]] * font_size) square([b[2] - b[0], b[3] - b[1]] * font_size);
+    translate([(b[0] + b[2]) / 2 * font_size - bridge_width / 2, b[1] * font_size])
+      square([bridge_width, (b[3] - b[1]) * font_size]);
 }
 
-module letter(i) linear_extrude(height = letter_thickness) glyph(letters[i][0]);
+// One letter, standing on its bottom face. The full outline is kept between the
+// chamfers, so the part that sits in the pocket is exactly the outline the pocket
+// was cut from. Top and bottom faces are chamfered at 45 degrees, cut as stacked
+// steps chamfer_step tall (finer than a print layer) from progressively inset outlines.
+module letter(i) {
+  ch = letters[i][0];
+  bot = letter_bottom_chamfer;
+  top = letter_chamfer;
+  nb = bot > 0 ? max(1, round(bot / chamfer_step)) : 0;
+  nt = top > 0 ? max(1, round(top / chamfer_step)) : 0;
+  translate([0, 0, bot]) linear_extrude(height = letter_thickness - bot - top) glyph(ch);
+  if (nb > 0) for (k = [0 : nb - 1])
+    translate([0, 0, k * bot / nb])
+      linear_extrude(height = bot - k * bot / nb + overcut)
+        offset(delta = -(bot - (k + 0.5) * bot / nb)) glyph(ch);
+  if (nt > 0) for (k = [0 : nt - 1])
+    translate([0, 0, letter_thickness - top - overcut])
+      linear_extrude(height = top - k * top / nt + overcut)
+        offset(delta = -(top - (k + 0.5) * top / nt)) glyph(ch);
+}
 
 // Plan outline of the base: rectangle with 45 degree corner cuts, shrunk by inset.
 function outline(inset) =

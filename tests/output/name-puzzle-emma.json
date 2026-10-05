@@ -1,6 +1,6 @@
 {
   "text": "EMMA",
-  "label": "EMMA (ALL CAPS, 3 in, Bambu A1)",
+  "label": "EMMA (ALL CAPS, 76.2 mm / 3.00 in, Bambu A1)",
   "bed": {
     "id": "custom",
     "label": "Custom bed",
@@ -16,6 +16,10 @@
     "lead_in": 0.5,
     "lead_in_steps": 5,
     "side_margin": 2,
+    "letter_chamfer": 0.6,
+    "letter_bottom_chamfer": 0.4,
+    "chamfer_step": 0.1,
+    "bridge_width": 5,
     "letter_gap": 3,
     "corner_chamfer": 4,
     "edge_chamfer": 1,
@@ -139,16 +143,16 @@
     }
   ],
   "timings": {
-    "letters": 162,
-    "base": 225,
-    "plates": 12,
-    "total": 446
+    "letters": 522,
+    "base": 246,
+    "plates": 18,
+    "total": 1023
   },
-  "grams": 142.3802745162003,
+  "grams": 142.29117987145122,
   "warnings": [],
   "notes": [
-    "On Bambu A1 the app blocks this build: status \"too-big\", offers 2 in instead.",
+    "On Bambu A1 the app blocks this build: status \"too-big\", offers 65.6 mm instead.",
     "Rendered on a custom 351 x 400 mm bed to test the geometry and timing.",
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 259.1 cm3, 0.2 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 258.6 cm3, 0.4 s)."
   ]
 }

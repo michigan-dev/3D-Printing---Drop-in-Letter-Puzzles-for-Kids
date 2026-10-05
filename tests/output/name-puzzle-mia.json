@@ -1,6 +1,6 @@
 {
   "text": "Mia",
-  "label": "Mia (First capital, 2 in, Bambu A1)",
+  "label": "Mia (First capital, 50.8 mm / 2.00 in, Bambu A1)",
   "bed": {
     "id": "a1",
     "label": "Bambu A1",
@@ -16,6 +16,10 @@
     "lead_in": 0.5,
     "lead_in_steps": 5,
     "side_margin": 2,
+    "letter_chamfer": 0.6,
+    "letter_bottom_chamfer": 0.4,
+    "chamfer_step": 0.1,
+    "bridge_width": 5,
     "letter_gap": 3,
     "corner_chamfer": 4,
     "edge_chamfer": 1,
@@ -121,14 +125,14 @@
     }
   ],
   "timings": {
-    "letters": 245,
-    "base": 369,
-    "plates": 16,
-    "total": 763
+    "letters": 699,
+    "base": 508,
+    "plates": 104,
+    "total": 1433
   },
-  "grams": 42.78757720429,
+  "grams": 42.744853440171795,
   "warnings": [],
   "notes": [
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 73.1 cm3, 0.3 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 72.7 cm3, 1.1 s)."
   ]
 }

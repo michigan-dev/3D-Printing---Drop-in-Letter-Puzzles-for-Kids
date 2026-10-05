@@ -61,6 +61,7 @@ def validate_case(meta_path):
         print(f"   note: {n}")
     total_bodies = 0
     base_mesh = None
+    base_plate = None
     for plate in meta["plates"]:
         mesh = trimesh.load(OUT / plate["file"], force="mesh")
         bodies = mesh.split(only_watertight=False)
@@ -78,8 +79,8 @@ def validate_case(meta_path):
             check(lo[0] >= -1e-4 and lo[1] >= -1e-4 and hi[0] <= bed["width"] + 1e-4 and hi[1] <= bed["depth"] + 1e-4,
                   f"{tag}: outside bed {bed['width']}x{bed['depth']}: {lo[:2]}..{hi[:2]}")
             bounds2d.append((lo, hi))
-            if abs(hi[2] - p["base_thickness"]) < 1e-3 and (hi[0] - lo[0]) > 0.9 * min(meta["base"]["width"], meta["base"]["depth"]) and len(b.faces) > 500 and base_mesh is None and (hi[1] - lo[1]) >= meta["base"]["depth"] - 1:
-                base_mesh = b
+            if base_mesh is None or b.volume > base_mesh.volume:
+                base_mesh, base_plate = b, plate
         # spacing between bodies (bounding boxes at least part_spacing apart => no overlap);
         # 0.005 mm tolerance because STL stores float32 coordinates
         min_gap = np.inf
@@ -100,12 +101,17 @@ def validate_case(meta_path):
     # ---- base dimensions
     if not check(base_mesh is not None, "could not identify the base body"):
         return
-    ext = base_mesh.extents
-    w, d = sorted(ext[:2], reverse=True) if meta["base"]["width"] >= meta["base"]["depth"] else sorted(ext[:2])
+    # undo the plate rotation (0, 90 or 45 degrees) before measuring the base
+    rot = next(q["rot"] for q in base_plate["placements"] if q["kind"] == "base")
+    base_flat = base_mesh.copy()
+    if rot:
+        base_flat.apply_transform(trimesh.transformations.rotation_matrix(np.radians(-rot), [0, 0, 1]))
+    ext = base_flat.extents
+    w, d = ext[0], ext[1]
     ew, ed, et = meta["base"]["width"], meta["base"]["depth"], p["base_thickness"]
     ok = abs(w - ew) < TOL and abs(d - ed) < TOL and abs(ext[2] - et) < 1e-3
     check(ok, f"base {w:.3f} x {d:.3f} x {ext[2]:.3f}, expected {ew:.3f} x {ed:.3f} x {et}")
-    print(f"   base measured {w:.2f} x {d:.2f} x {ext[2]:.2f} mm, expected {ew:.2f} x {ed:.2f} x {et:.2f} mm "
+    print(f"   base{f' (plate rotated {rot} deg)' if rot else ''} measured {w:.2f} x {d:.2f} x {ext[2]:.2f} mm, expected {ew:.2f} x {ed:.2f} x {et:.2f} mm "
           f"({w / 25.4:.2f} x {d / 25.4:.2f} in) -> {'OK' if ok else 'MISMATCH'}")
 
     # ---- margins and walls, measured on the assembled base (not rotated)

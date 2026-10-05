@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import { loadNodeRunner, repoPath } from './node-runner.mjs';
-import { prepareJob, plateFileName, fileStem } from '../lib/job.js';
+import { prepareJob, fileStem } from '../lib/job.js';
 import { buildPuzzle } from '../lib/build.js';
 import { parseStl, transformTris, writeBinaryStl, mergeTris, meshStats } from '../lib/stl.js';
 
@@ -17,20 +17,23 @@ export const CASES = [
   { rawName: 'Jiggy', caseStyle: 'first', heightIn: 2.5, printer: 'a1' },
   { rawName: 'Bartholomew', caseStyle: 'first', heightIn: 3, printer: 'a1' },
   { rawName: 'Lily', caseStyle: 'first', heightIn: 3, printer: 'mk4' }, // splits onto 2 plates
+  { rawName: 'Ellie', caseStyle: 'first', printer: 'a1' }, // default 14 mm, dotted i, chamfered letters
+  { rawName: 'Charlotte', caseStyle: 'first', heightMm: 40, printer: 'a1' }, // too long to lie straight: base turned 45 degrees
 ];
 
 const outDir = repoPath('tests/output/');
 fs.mkdirSync(outDir, { recursive: true });
+for (const f of fs.readdirSync(outDir)) if (f.startsWith('name-puzzle-')) fs.rmSync(outDir + f); // no stale files
 const run = await loadNodeRunner();
 const summary = [];
 
 for (const input of CASES) {
   let job = prepareJob(input);
-  const label = `${job.text} (${input.caseStyle === 'caps' ? 'ALL CAPS' : 'First capital'}, ${input.heightIn} in, ${job.bed.label})`;
+  const label = `${job.text} (${input.caseStyle === 'caps' ? 'ALL CAPS' : 'First capital'}, ${job.heightMm} mm / ${(job.heightMm / 25.4).toFixed(2)} in, ${job.bed.label})`;
   const note = [];
   if (job.status !== 'ready') {
     note.push(`On ${job.bed.label} the app blocks this build: status "${job.status}"` +
-      (job.maxHeightIn ? `, offers ${job.maxHeightIn} in instead.` : `, base would be ${job.layout.base.width.toFixed(0)} mm wide (${job.widthAtMin.toFixed(0)} mm at 2 in).`));
+      (job.maxHeightMm ? `, offers ${job.maxHeightMm} mm instead.` : `, base would be ${job.layout.base.width.toFixed(0)} mm wide (${job.widthAtMin.toFixed(0)} mm at ${job.minHeightMm} mm).`));
     // Still exercise the engine on the requested size with a bed big enough.
     const custom = { width: Math.min(1000, Math.ceil(job.layout.base.width + 20)), depth: 400 };
     job = prepareJob({ ...input, printer: 'custom', customBed: custom });
@@ -42,7 +45,7 @@ for (const input of CASES) {
   const stem = fileStem(job.text);
   const files = [];
   for (const pl of result.plates) {
-    const name = plateFileName(job.text, pl.number, result.plates.length);
+    const name = pl.file;
     fs.writeFileSync(outDir + name, pl.stl);
     files.push(name);
   }
