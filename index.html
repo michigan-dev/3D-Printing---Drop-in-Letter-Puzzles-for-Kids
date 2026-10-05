@@ -103,7 +103,7 @@
         </fieldset>
 
         <details class="advanced" id="advanced">
-          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 2 · 8 / 5 mm · chamfers</span></summary>
+          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 2 · 14 / 5 mm · chamfers</span></summary>
           <div class="adv-grid">
             <div class="mini">
               <label for="fit_clearance">Fit clearance (mm per side)</label>
@@ -112,7 +112,7 @@
             </div>
             <div class="mini">
               <label for="letter_thickness">Letter thickness (mm)</label>
-              <input id="letter_thickness" data-param type="number" inputmode="decimal" min="4" max="15" step="0.5" value="8" aria-describedby="note-letter_thickness">
+              <input id="letter_thickness" data-param type="number" inputmode="decimal" min="4" max="15" step="0.5" value="14" aria-describedby="note-letter_thickness">
               <p class="clamp-note" id="note-letter_thickness" hidden></p>
             </div>
             <div class="mini">
@@ -127,12 +127,12 @@
             </div>
             <div class="mini">
               <label for="edge_chamfer">Base edge chamfer (mm)</label>
-              <input id="edge_chamfer" data-param type="number" inputmode="decimal" min="0" max="1.1" step="0.1" value="1" aria-describedby="note-edge_chamfer">
+              <input id="edge_chamfer" data-param type="number" inputmode="decimal" min="0" max="1.1" step="0.1" value="1.1" aria-describedby="note-edge_chamfer">
               <p class="clamp-note" id="note-edge_chamfer" hidden></p>
             </div>
             <div class="mini">
               <label for="letter_chamfer">Letter edge chamfer (mm)</label>
-              <input id="letter_chamfer" data-param type="number" inputmode="decimal" min="0" max="1" step="0.1" value="1" aria-describedby="note-letter_chamfer">
+              <input id="letter_chamfer" data-param type="number" inputmode="decimal" min="0" max="2" step="0.1" value="2" aria-describedby="note-letter_chamfer">
               <p class="clamp-note" id="note-letter_chamfer" hidden></p>
             </div>
           </div>
@@ -176,7 +176,7 @@
             </div>
           </div>
           <div class="preview-foot">
-            <span id="foot-left">Letters seated in the base · 3 mm stand proud for small hands</span>
+            <span id="foot-left">Letters seated in the base · 9 mm stand proud for small hands</span>
             <span class="foot-right">Drag to rotate · scroll to zoom</span>
           </div>
         </div>
@@ -192,6 +192,10 @@
         <div class="downloads" id="downloads" hidden>
           <p class="safety"><strong>Safety:</strong> letters are toy-sized small parts: a choking hazard for children under 3. For ages 3+ with adult supervision. Check prints for sharp edges or stringing before giving them to a child.</p>
           <div class="dl-buttons" id="dl-buttons"></div>
+          <div class="two-colour" id="two-colour" hidden>
+            <p><strong>Two colours?</strong> Download the base and the letters as separate STL files and print each in its own filament.</p>
+            <div class="dl-buttons" id="dl-two"></div>
+          </div>
           <p class="stale-note" id="stale-note" hidden>You changed a setting. Rebuild to update your files.</p>
         </div>
       </section>

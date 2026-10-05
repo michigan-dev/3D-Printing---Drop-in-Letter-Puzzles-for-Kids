@@ -1,7 +1,9 @@
 // Name Puzzle Maker: page controller. Reads the form, keeps a live layout
 // and preview up to date, sends builds to the OpenSCAD worker and offers the
 // resulting files for download.
-import { prepareJob, fileStem, GLYPH_DATA } from './lib/job.js';
+import { prepareJob, timeStamp, nameSeparatePlates, isAlreadySplit, GLYPH_DATA } from './lib/job.js';
+import { makePlateStls } from './lib/build.js';
+import { planPlates } from './lib/layout.js';
 import { DEFAULTS, MAX_LETTERS, PRINTERS, HEIGHT_MIN_MM, HEIGHT_MAX_MM, sanitizeName, inchesToMm } from './lib/layout.js';
 import { makeZip } from './lib/zip.js';
 import { createViewer, LETTER_COLORS } from './lib/viewer.js';
@@ -331,7 +333,7 @@ function renderDownloadButtons() {
   const { job, result } = state.built;
   const box = $('dl-buttons');
   box.replaceChildren();
-  const stem = fileStem(job.text);
+  const stem = job.stem;
   box.append(button('.scad source', 'secondary', () => save(`${stem}.scad`, job.scad, 'text/plain')));
   const n = result.plates.length;
   for (const pl of result.plates) {
@@ -347,6 +349,27 @@ function renderDownloadButtons() {
     z.append(el('span', zipName, 'fname'));
     box.append(z);
   }
+  renderTwoColour(job, result);
+}
+
+// "Two colours?": the base alone and the letters alone, as separate flat plates. Hidden when the
+// normal download is already split that way (a base turned 45 degrees, letters on their own plate).
+function renderTwoColour(job, result) {
+  const box = $('dl-two');
+  box.replaceChildren();
+  const alreadySplit = isAlreadySplit(job.plan.plates);
+  $('two-colour').hidden = alreadySplit;
+  if (alreadySplit) return;
+  const plan = planPlates(job.layout, job.bed, job.params, { separate: true });
+  if (!plan.ok) { $('two-colour').hidden = true; return; }
+  nameSeparatePlates(job.stem, plan.plates);
+  let stls = null; // built on first click, from the meshes the build already made
+  const files = () => (stls ??= makePlateStls(plan, job.layout, result.baseMesh, result.letterMeshes, job.bed));
+  plan.plates.forEach((pl, i) => {
+    const b = button(pl.label, 'secondary', () => save(pl.file, files()[i].stl, 'model/stl'));
+    b.append(el('span', pl.file, 'fname'));
+    box.append(b);
+  });
 }
 
 function save(name, data, type) {
@@ -385,7 +408,7 @@ function warmUp() {
 
 function startBuild() {
   const input = readInputs();
-  const full = prepareJob({ ...input, generatedOn: new Date().toISOString().slice(0, 10) });
+  const full = prepareJob({ ...input, fileStamp: timeStamp() });
   if (full.status !== 'ready') {
     if (full.status === 'invalid-name') { state.triedEmpty = true; update(); $('name').focus(); }
     return;

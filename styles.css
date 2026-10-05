@@ -315,6 +315,9 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .safety { flex: 1 1 280px; background: var(--warn-bg); color: var(--warn-ink); border-radius: 14px; padding: 14px 16px; font-size: 13px; line-height: 1.5; }
 .dl-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; align-content: flex-start; flex: 0 1 auto; margin-left: auto; }
 .dl-buttons .btn { min-height: 66px; }
+.two-colour { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: var(--teal-1); border-radius: 14px; padding: 12px 16px; }
+.two-colour p { flex: 1 1 260px; font-size: 13px; line-height: 1.5; color: var(--teal-ink); }
+.downloads.stale .dl-two,
 .downloads.stale .dl-buttons { opacity: .45; pointer-events: none; }
 .stale-note { flex-basis: 100%; font-size: 13px; color: var(--clamp-ink); font-weight: 500; }
 
