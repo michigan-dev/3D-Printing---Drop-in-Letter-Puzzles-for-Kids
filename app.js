@@ -1,9 +1,10 @@
 // Name Puzzle Maker: page controller. Reads the form, keeps a live layout
 // and preview up to date, sends builds to the OpenSCAD worker and offers the
 // resulting files for download.
-import { prepareJob, timeStamp, nameSeparatePlates, isAlreadySplit, GLYPH_DATA } from './lib/job.js';
+import { prepareJob, timeStamp, nameSeparatePlates, isAlreadySplit } from './lib/job.js';
 import { makePlateStls } from './lib/build.js';
 import { planPlates } from './lib/layout.js';
+import { FONTS } from './lib/fonts.js';
 import { DEFAULTS, MAX_LETTERS, PRINTERS, HEIGHT_MIN_MM, HEIGHT_MAX_MM, sanitizeName, inchesToMm } from './lib/layout.js';
 import { makeZip } from './lib/zip.js';
 import { createViewer, LETTER_COLORS } from './lib/viewer.js';
@@ -35,6 +36,7 @@ function readInputs() {
   return {
     rawName: $('name').value,
     caseStyle: form.elements.caseStyle.value,
+    font: form.elements.font.value,
     heightMm: Number($('height').value),
     printer: form.elements.printer.value,
     customBed: { width: $('bed-w').value, depth: $('bed-d').value },
@@ -42,7 +44,7 @@ function readInputs() {
   };
 }
 
-const jobKey = (j) => (j && j.status === 'ready' ? JSON.stringify([j.text, j.params, j.bed]) : '');
+const jobKey = (j) => (j && j.status === 'ready' ? JSON.stringify([j.text, j.font, j.params, j.bed]) : '');
 const fmt = (v, d = 1) => String(+v.toFixed(d));
 const inOf = (mm) => (mm / 25.4).toFixed(2);
 
@@ -95,12 +97,19 @@ function renderName(input) {
   }));
   const len = state.job.text.length;
   strip.style.fontSize = len > 8 ? '28px' : len > 5 ? '34px' : '';
+  strip.style.fontFamily = form.elements.font.value === 'serif' ? 'var(--word-serif)' : '';
+  strip.style.fontWeight = form.elements.font.value === 'serif' ? '400' : '';
 }
 
 function renderCaseLabels() {
   const base = sanitizeName($('name').value).name || EXAMPLE_NAME;
   $('case-caps').textContent = base.toUpperCase();
   $('case-first').textContent = base[0].toUpperCase() + base.slice(1).toLowerCase();
+  // the font segments show the word in the current letter style, in each font
+  const word = form.elements.caseStyle.value === 'caps' ? base.toUpperCase() : base[0].toUpperCase() + base.slice(1).toLowerCase();
+  $('font-andika').textContent = word;
+  $('font-serif').textContent = word;
+  $('font-note').textContent = `${FONTS[form.elements.font.value].label}: ${FONTS[form.elements.font.value].note}.`;
 }
 
 function renderHeight() {
@@ -295,7 +304,7 @@ function renderPreview() {
     params: job.params,
     bed: job.bed,
     plan: job.plan,
-    glyphs: GLYPH_DATA.GLYPHS,
+    glyphs: job.glyphs,
     built,
     tooBig: job.status === 'too-big' || job.status === 'nothing-fits',
     resetCamera: renderPreview.lastView !== view,
@@ -403,7 +412,7 @@ function warmUp() {
   if (warmedUp) return;
   warmedUp = true;
   worker ??= createWorker();
-  worker.postMessage({ type: 'warmup' });
+  worker.postMessage({ type: 'warmup', fontFile: FONTS[form.elements.font.value].FONT.file });
 }
 
 function startBuild() {

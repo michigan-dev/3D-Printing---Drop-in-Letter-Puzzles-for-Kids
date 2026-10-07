@@ -5,9 +5,8 @@ import { createRunner } from './lib/engine.js';
 import { buildPuzzle } from './lib/build.js';
 
 const WASM_URL = new URL('./vendor/openscad/openscad.wasm', import.meta.url);
-const FONT_URL = new URL('./fonts/Andika-Bold.ttf', import.meta.url);
 const cache = new Map(); // rendered meshes, reused across builds
-let runnerPromise = null;
+const runners = new Map(); // font file -> Promise<runner>; each font is fetched once, when first needed
 
 async function compileWasm() {
   try {
@@ -20,22 +19,25 @@ async function compileWasm() {
   }
 }
 
-function getRunner() {
-  runnerPromise ??= (async () => {
-    const [wasmModule, fontRes] = await Promise.all([compileWasm(), fetch(FONT_URL)]);
-    if (!fontRes.ok) throw new Error(`Could not load the Andika font (${fontRes.status}).`);
-    const font = new Uint8Array(await fontRes.arrayBuffer());
-    return createRunner({ OpenSCAD, wasmModule, fonts: { 'Andika-Bold.ttf': font } });
-  })();
-  runnerPromise.catch(() => { runnerPromise = null; });
-  return runnerPromise;
+function getRunner(fontFile) {
+  if (!runners.has(fontFile)) {
+    const promise = (async () => {
+      const [wasmModule, fontRes] = await Promise.all([compileWasm(), fetch(new URL(`./fonts/${fontFile}`, import.meta.url))]);
+      if (!fontRes.ok) throw new Error(`Could not load the font ${fontFile} (${fontRes.status}).`);
+      const font = new Uint8Array(await fontRes.arrayBuffer());
+      return createRunner({ OpenSCAD, wasmModule, fonts: { [fontFile]: font } });
+    })();
+    promise.catch(() => runners.delete(fontFile));
+    runners.set(fontFile, promise);
+  }
+  return runners.get(fontFile);
 }
 
 self.onmessage = async ({ data }) => {
   const { type, id } = data;
   if (type === 'warmup') {
     try {
-      await getRunner();
+      await getRunner(data.fontFile || 'Andika-Bold.ttf');
       self.postMessage({ type: 'ready' });
     } catch (err) {
       self.postMessage({ type: 'error', id, message: String(err.message || err) });
@@ -44,7 +46,7 @@ self.onmessage = async ({ data }) => {
   }
   if (type !== 'build') return;
   try {
-    const run = await getRunner();
+    const run = await getRunner(data.job.fontFile);
     const result = await buildPuzzle(run, data.job, {
       cache,
       onStep: (step) => self.postMessage({ type: 'step', id, step }),

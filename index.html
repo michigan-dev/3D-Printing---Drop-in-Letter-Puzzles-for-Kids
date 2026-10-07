@@ -70,6 +70,15 @@
           </div>
         </fieldset>
 
+        <fieldset class="field">
+          <legend class="label">Letter font</legend>
+          <div class="segmented big" role="radiogroup" aria-label="Letter font" aria-describedby="font-note">
+            <label><input type="radio" name="font" value="andika" checked><span class="seg-andika" id="font-andika" aria-label="Andika">Emma</span></label>
+            <label><input type="radio" name="font" value="serif"><span class="seg-serif" id="font-serif" aria-label="Bree Serif">Emma</span></label>
+          </div>
+          <p class="help" id="font-note">Andika: clear sans-serif letters designed for beginning readers.</p>
+        </fieldset>
+
         <div class="field">
           <div class="label-row">
             <label class="label" for="height">Letter height</label>
@@ -204,7 +213,7 @@
     <section class="tips" aria-label="Tips">
       <div>
         <h2>Made for early readers</h2>
-        <p>Andika letterforms, with the dots on i and j joined by a 5 mm bar so every letter prints as one solid piece, and softly chamfered edges.</p>
+        <p>Easy-to-read letterforms in your choice of font, with the dots on i and j joined by a 5 mm bar so every letter prints as one solid piece, and softly chamfered edges.</p>
       </div>
       <div>
         <h2>Prints flat, in one go</h2>
@@ -218,7 +227,7 @@
     <p>Made by <a href="https://github.com/YOUR-GITHUB-USER" id="maker-link">Brian Aberle</a></p>
     <!-- Optional: put your order page URL in href and remove "hidden" to show the order link. -->
     <p id="order-wrap" hidden>Want it printed for you? <a href="" id="order-link">Order here</a></p>
-    <p class="credits">Font: <a href="fonts/OFL.txt">Andika</a> by SIL International (OFL). Engine: <a href="vendor/openscad/README.md">OpenSCAD</a> (GPL).</p>
+    <p class="credits">Fonts: <a href="fonts/OFL.txt">Andika</a> by SIL International and <a href="fonts/OFL-BreeSerif.txt">Bree Serif</a> by TypeTogether (both SIL OFL). Engine: <a href="vendor/openscad/README.md">OpenSCAD</a> (GPL).</p>
   </footer>
 </body>
 </html>

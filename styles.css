@@ -13,6 +13,12 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'Bree Serif';
+  src: url('fonts/BreeSerif-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Andika';
   src: url('fonts/Andika-Bold.ttf') format('truetype');
   font-weight: 400 700;
@@ -48,6 +54,7 @@
   --ui: 'Lexend', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --word: 'Andika', 'Lexend', system-ui, sans-serif;
+  --word-serif: 'Bree Serif', Georgia, serif;
   --pad-x: 40px;
   color-scheme: light;
 }
@@ -138,6 +145,7 @@ legend.label { margin-bottom: 8px; }
 .segmented input:checked + span { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
 .segmented input:focus-visible + span { box-shadow: 0 0 0 3px var(--accent); }
 .segmented.big span { height: 48px; font: 700 19px/1 var(--word); }
+.segmented.big span.seg-serif { font: 400 21px/1 'Bree Serif', Georgia, serif; }
 .segmented.small { background: var(--teal-3); border-radius: 12px; display: inline-grid; }
 .segmented.small span { height: 34px; padding: 0 14px; font: 500 13px/1 var(--ui); color: var(--teal-ink); border-radius: 9px; }
 .segmented.small input:checked + span { color: var(--ink); }
