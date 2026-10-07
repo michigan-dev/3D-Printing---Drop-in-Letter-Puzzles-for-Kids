@@ -1,7 +1,7 @@
 {
   "text": "Jiggy",
   "stem": "Jiggy_2026-01-01_12-00-00",
-  "label": "Jiggy (First capital, 63.5 mm / 2.50 in, Bambu A1)",
+  "label": "Jiggy (First capital, 63.5 mm / 2.50 in, Andika, Bambu A1)",
   "bed": {
     "id": "a1",
     "label": "Bambu A1",
@@ -453,10 +453,10 @@
         ],
         "bars": [
           [
-            60.62965118453044,
-            66.51704953208503,
-            65.62965118453045,
-            83.23652071263707
+            60.72232335889138,
+            67.13529158110889,
+            65.72232335889137,
+            81.8762599387993
           ]
         ]
       }
@@ -1797,15 +1797,15 @@
     }
   ],
   "timings": {
-    "letters": 2882,
-    "base": 422,
-    "plates": 39,
-    "total": 3419
+    "letters": 3354,
+    "base": 484,
+    "plates": 35,
+    "total": 3937
   },
-  "grams": 117.62098916571411,
+  "grams": 117.6210173654221,
   "warnings": [],
   "notes": [
     "two-colour downloads: Jiggy_2026-01-01_12-00-00-base-only.stl, Jiggy_2026-01-01_12-00-00-letters-only.stl",
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 230.7 cm3, 3.2 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 230.7 cm3, 3.9 s)."
   ]
 }

@@ -9,7 +9,7 @@ export const repoPath = (p) => fileURLToPath(new URL(p, root));
 export async function loadNodeRunner() {
   const { default: OpenSCAD } = await import(new URL('vendor/openscad/openscad.js', root).href);
   const wasmBinary = fs.readFileSync(repoPath('vendor/openscad/openscad.wasm'));
-  const fonts = { 'Andika-Bold.ttf': fs.readFileSync(repoPath('fonts/Andika-Bold.ttf')) };
+  const fonts = Object.fromEntries(['Andika-Bold.ttf', 'BreeSerif-Regular.ttf'].map((f) => [f, fs.readFileSync(repoPath(`fonts/${f}`))]));
   return createRunner({ OpenSCAD, wasmBinary, fonts });
 }
 

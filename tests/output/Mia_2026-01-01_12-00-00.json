@@ -1,7 +1,7 @@
 {
   "text": "Mia",
   "stem": "Mia_2026-01-01_12-00-00",
-  "label": "Mia (First capital, 50.8 mm / 2.00 in, Bambu A1)",
+  "label": "Mia (First capital, 50.8 mm / 2.00 in, Andika, Bambu A1)",
   "bed": {
     "id": "a1",
     "label": "Bambu A1",
@@ -441,10 +441,10 @@
         ],
         "bars": [
           [
-            73.82965922815089,
-            39.03180125602705,
-            78.82965922815089,
-            52.407378200468685
+            73.90379696763964,
+            39.52639489524614,
+            78.90379696763964,
+            51.31916958139846
           ]
         ]
       }
@@ -1008,15 +1008,15 @@
     }
   ],
   "timings": {
-    "letters": 1905,
-    "base": 289,
-    "plates": 29,
-    "total": 2364
+    "letters": 2344,
+    "base": 342,
+    "plates": 27,
+    "total": 2884
   },
-  "grams": 50.69978541093277,
+  "grams": 50.6997780861961,
   "warnings": [],
   "notes": [
     "two-colour downloads: Mia_2026-01-01_12-00-00-base-only.stl, Mia_2026-01-01_12-00-00-letters-only.stl",
-    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 89.0 cm3, 2.1 s)."
+    ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 89.0 cm3, 2.7 s)."
   ]
 }

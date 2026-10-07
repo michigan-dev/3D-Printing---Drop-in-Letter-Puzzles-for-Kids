@@ -82,9 +82,14 @@ All dimensions are in mm. Names match the generated `.scad`.
 | `part_spacing` | 5 | Gap between parts on the build plate. |
 | `bed_margin` | 3 | Parts stay this far inside the bed edges. |
 
-**Font:** [Andika](https://software.sil.org/andika/) Bold by SIL International, designed for
-beginning readers. It is bundled unmodified in `fonts/` under the SIL Open Font License 1.1
-(`fonts/OFL.txt`). The interface uses Lexend and JetBrains Mono (both OFL, licenses in
+**Fonts:** a **Letter font** toggle chooses between two bundled fonts, both unmodified in `fonts/`
+under the SIL Open Font License 1.1: [Andika](https://software.sil.org/andika/) Bold by SIL
+International, designed for beginning readers (`fonts/OFL.txt`), and
+[Bree Serif](https://fonts.google.com/specimen/Bree+Serif) by TypeTogether, a friendly slab serif whose
+capital I has a bar at the top and the bottom and whose j has a line across the top
+(`fonts/OFL-BreeSerif.txt`). Each font has its own generated glyph data (`lib/glyphs.js`,
+`lib/glyphs-serif.js`, built by `tools/build-glyphs.mjs`); to add a font, add it to `SPECS` in that
+tool and to `lib/fonts.js`. The interface uses Lexend and JetBrains Mono (both OFL, licenses in
 `fonts/`). **Engine:** OpenSCAD 2025.03 WebAssembly, GPL-2.0-or-later; see
 `vendor/openscad/README.md`. **Preview:** three.js 0.186.1 (MIT) from cdnjs, pinned with SRI.
 
@@ -141,7 +146,8 @@ lib/scad.js     inputs + layout -> .scad source (pure)
 lib/job.js      form inputs -> everything a build needs (pure)
 lib/build.js    render pipeline shared by the worker and tests
 lib/engine.js   OpenSCAD wasm runner
-lib/glyphs.js   generated glyph outlines (tools/build-glyphs.mjs)
+lib/fonts.js    the font choices (Andika, Bree Serif) and their glyph data
+lib/glyphs.js, lib/glyphs-serif.js   generated glyph outlines (tools/build-glyphs.mjs)
 lib/stl.js  lib/zip.js  lib/viewer.js
 fonts/  vendor/openscad/  tools/  tests/  docs/
 ```

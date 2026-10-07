@@ -11,7 +11,6 @@ import { prepareJob, nameSeparatePlates, isAlreadySplit } from '../lib/job.js';
 import { planPlates } from '../lib/layout.js';
 import { buildPuzzle, makePlateStls } from '../lib/build.js';
 import { parseStl, transformTris, writeBinaryStl, mergeTris, meshStats } from '../lib/stl.js';
-import { GLYPHS } from '../lib/glyphs.js';
 
 export const CASES = [
   { rawName: 'Mia', caseStyle: 'first', heightIn: 2, printer: 'a1' },
@@ -21,6 +20,8 @@ export const CASES = [
   { rawName: 'Lily', caseStyle: 'first', heightIn: 3, printer: 'mk4' }, // splits onto 2 plates
   { rawName: 'Ellie', caseStyle: 'first', printer: 'a1' }, // default 14 mm, dotted i, chamfered letters
   { rawName: 'Charlotte', caseStyle: 'first', heightMm: 40, printer: 'a1' }, // too long to lie straight: base turned 45 degrees
+  { rawName: 'Patrick', caseStyle: 'first', font: 'serif', printer: 'a1' }, // Bree Serif at the default 14 mm: dotted i, serif I/j family
+  { rawName: 'Ijay', caseStyle: 'first', font: 'serif', heightMm: 40, printer: 'a1' }, // serif capital I and a j with its top line
 ];
 
 const outDir = repoPath('tests/output/');
@@ -32,7 +33,7 @@ const summary = [];
 
 for (const input of CASES) {
   let job = prepareJob({ ...input, fileStamp: STAMP });
-  const label = `${job.text} (${input.caseStyle === 'caps' ? 'ALL CAPS' : 'First capital'}, ${job.heightMm} mm / ${(job.heightMm / 25.4).toFixed(2)} in, ${job.bed.label})`;
+  const label = `${job.text} (${input.caseStyle === 'caps' ? 'ALL CAPS' : 'First capital'}, ${job.heightMm} mm / ${(job.heightMm / 25.4).toFixed(2)} in, ${job.fontFamily}, ${job.bed.label})`;
   const note = [];
   if (job.status !== 'ready') {
     note.push(`On ${job.bed.label} the app blocks this build: status "${job.status}"` +
@@ -94,11 +95,11 @@ for (const input of CASES) {
     letters: job.layout.letters.map((L) => ({
       ch: L.ch, x: L.x, y: L.y,
       outline: {
-        shapes: GLYPHS[L.ch].shapes.map((sh) => ({
+        shapes: job.glyphs[L.ch].shapes.map((sh) => ({
           outer: sh.outer.map((v, i) => v * job.layout.fontSize + (i % 2 ? L.y : L.x)),
           holes: sh.holes.map((h) => h.map((v, i) => v * job.layout.fontSize + (i % 2 ? L.y : L.x))),
         })),
-        bars: GLYPHS[L.ch].bridges.map(([x0, y0, x1, y1]) => {
+        bars: job.glyphs[L.ch].bridges.map(([x0, y0, x1, y1]) => {
           const cx = ((x0 + x1) / 2) * job.layout.fontSize + L.x, half = job.params.bridge_width / 2;
           return [cx - half, y0 * job.layout.fontSize + L.y, cx + half, y1 * job.layout.fontSize + L.y];
         }),

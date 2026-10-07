@@ -1,9 +1,9 @@
 // Name Puzzle Maker: drop-in letter puzzle for "Jiggy"
 // Generated on 2026-01-01 12:00:00 by Name Puzzle Maker. Rendered with OpenSCAD 2025.03+ (Manifold backend).
 //
-// Font: Andika Bold, SIL Open Font License 1.1 (c) SIL International.
+// Font: Andika (Andika-Bold.ttf), SIL Open Font License 1.1; the license is in the website's fonts/ folder.
 // Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
-// website's fonts/ folder), or install Andika on your computer.
+// website's fonts/ folder), or install the font on your computer.
 //
 // Base 236.6463 x 99.495 x 8 mm (9.3 x 3.9 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
@@ -77,7 +77,7 @@ letters = [
 // one piece. [x0, y0, x1, y1] in units of font_size give the stem's centre line
 // ((x0 + x1) / 2) and the bar's vertical span; the bar is bridge_width wide.
 glyph_bridges = [
-  ["i", [0.1192, 0.6311, 0.312, 0.8918]],
+  ["i", [0.217, 0.6407, 0.217, 0.8706]],
 ];
 
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.

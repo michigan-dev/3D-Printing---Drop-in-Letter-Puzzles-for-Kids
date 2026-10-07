@@ -1,7 +1,7 @@
 {
   "text": "Lily",
   "stem": "Lily_2026-01-01_12-00-00",
-  "label": "Lily (First capital, 76.2 mm / 3.00 in, Prusa MK4)",
+  "label": "Lily (First capital, 76.2 mm / 3.00 in, Andika, Prusa MK4)",
   "bed": {
     "id": "mk4",
     "label": "Prusa MK4",
@@ -359,10 +359,10 @@
         ],
         "bars": [
           [
-            71.27615198265451,
-            78.70013761142813,
-            76.27615198265451,
-            98.7635030280906
+            71.38735859188765,
+            79.44202807025677,
+            76.38735859188765,
+            97.13119009948527
           ]
         ]
       }
@@ -869,16 +869,16 @@
     }
   ],
   "timings": {
-    "letters": 1683,
-    "base": 246,
-    "plates": 11,
-    "total": 2127
+    "letters": 2031,
+    "base": 292,
+    "plates": 13,
+    "total": 2493
   },
-  "grams": 107.12347644572138,
+  "grams": 107.12346364292793,
   "warnings": [],
   "notes": [
     "two-colour downloads: Lily_2026-01-01_12-00-00-base-only.stl, Lily_2026-01-01_12-00-00-letters-only.stl",
     ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 160.6 cm3, 0.4 s).",
-    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 57.2 cm3, 1.4 s)."
+    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 57.2 cm3, 1.5 s)."
   ]
 }

@@ -1,11 +1,11 @@
 // Name Puzzle Maker: drop-in letter puzzle for "Ellie"
 // Generated on 2026-01-01 12:00:00 by Name Puzzle Maker. Rendered with OpenSCAD 2025.03+ (Manifold backend).
 //
-// Font: Andika Bold, SIL Open Font License 1.1 (c) SIL International.
+// Font: Andika (Andika-Bold.ttf), SIL Open Font License 1.1; the license is in the website's fonts/ folder.
 // Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
-// website's fonts/ folder), or install Andika on your computer.
+// website's fonts/ folder), or install the font on your computer.
 //
-// Base 72.5765 x 27.5956 x 8 mm (2.9 x 1.1 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
+// Base 72.5585 x 27.5956 x 8 mm (2.9 x 1.1 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
@@ -54,7 +54,7 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [72.5765, 27.5956];
+base_size = [72.5585, 27.5956];
 font = "Andika:style=Bold";
 // text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
 font_size = letter_height / 0.99013;
@@ -69,26 +69,26 @@ letters = [
   ["E", 4.6006, 6.6532],  // [character, pen x, baseline y] in base coordinates
   ["l", 21.4932, 6.6532],
   ["l", 32.6448, 6.6532],
-  ["i", 44.5125, 6.6532],
-  ["e", 57.0949, 6.6532],
+  ["i", 44.4924, 6.6532],
+  ["e", 57.0769, 6.6532],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
 // one piece. [x0, y0, x1, y1] in units of font_size give the stem's centre line
 // ((x0 + x1) / 2) and the bar's vertical span; the bar is bridge_width wide.
 glyph_bridges = [
-  ["i", [0.1192, 0.6311, 0.312, 0.8918]],
+  ["i", [0.217, 0.6407, 0.217, 0.8706]],
 ];
 
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 64.6441, 114.2022, 0],
-    [0, 140.7822, 127.7978, 0],
-    [1, 154.815, 126.4554, 0],
-    [2, 162.8834, 126.4554, 0],
-    [3, 171.9381, 126.839, 0],
-    [4, 181.6231, 131.8252, 0]
+    [-1, 64.6531, 114.2022, 0],
+    [0, 140.7732, 127.7978, 0],
+    [1, 154.806, 126.4554, 0],
+    [2, 162.8744, 126.4554, 0],
+    [3, 171.9087, 126.839, 0],
+    [4, 181.614, 131.8252, 0]
   ],
 ];
 

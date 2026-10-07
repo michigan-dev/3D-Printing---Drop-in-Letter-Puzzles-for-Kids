@@ -1,7 +1,7 @@
 {
   "text": "Charlotte",
   "stem": "Charlotte_2026-01-01_12-00-00",
-  "label": "Charlotte (First capital, 40 mm / 1.57 in, Bambu A1)",
+  "label": "Charlotte (First capital, 40 mm / 1.57 in, Andika, Bambu A1)",
   "bed": {
     "id": "a1",
     "label": "Bambu A1",
@@ -2366,15 +2366,15 @@
   ],
   "separate": [],
   "timings": {
-    "letters": 3891,
-    "base": 599,
-    "plates": 35,
-    "total": 4585
+    "letters": 4584,
+    "base": 757,
+    "plates": 40,
+    "total": 5451
   },
   "grams": 86.58505089847786,
   "warnings": [],
   "notes": [
     ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 94.4 cm3, 0.6 s).",
-    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 55.2 cm3, 3.7 s)."
+    ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 55.2 cm3, 4.6 s)."
   ]
 }

@@ -1,20 +1,20 @@
-// Name Puzzle Maker: drop-in letter puzzle for "Lily"
+// Name Puzzle Maker: drop-in letter puzzle for "Ijay"
 // Generated on 2026-01-01 12:00:00 by Name Puzzle Maker. Rendered with OpenSCAD 2025.03+ (Manifold backend).
 //
-// Font: Andika (Andika-Bold.ttf), SIL Open Font License 1.1; the license is in the website's fonts/ folder.
-// Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
+// Font: Bree Serif (BreeSerif-Regular.ttf), SIL Open Font License 1.1; the license is in the website's fonts/ folder.
+// Keep BreeSerif-Regular.ttf in a "fonts" folder next to this file (it is in the
 // website's fonts/ folder), or install the font on your computer.
 //
-// Base 187.8312 x 119.2383 x 8 mm (7.4 x 4.7 in), 2 plate(s) on Prusa MK4 (250 x 210 mm).
+// Base 119.2823 x 67.2047 x 8 mm (4.7 x 2.6 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
 
-use <fonts/Andika-Bold.ttf>
+use <fonts/BreeSerif-Regular.ttf>
 
 /* [Output] */
 // What to render. Each plate is ready to slice: everything flat at Z = 0.
-part = "plate_1"; // [assembled, base, letters, plate_1, plate_2]
+part = "plate_1"; // [assembled, base, letters, plate_1]
 // Letter index for part = "letter" (used by the website).
 letter_index = 0;
 
@@ -27,7 +27,7 @@ lead_in_steps = 5;
 
 /* [Sizes] */
 // Cap height of the capital letters (mm).
-letter_height = 76.2;
+letter_height = 40;
 letter_thickness = 14;
 pocket_depth = 5;
 // Solid floor under the pockets.
@@ -46,7 +46,7 @@ letter_chamfer = 2;
 letter_bottom_chamfer = 0.4;
 // Chamfer of the letters' vertical corners (plan view). Limited to 3.5% of the cap height,
 // because it is cut by eroding and re-growing the outline, which would delete thin strokes.
-letter_corner_chamfer = 2;
+letter_corner_chamfer = 1.4;
 // Width of the bar that joins the dot of i and j to its stem.
 bridge_width = 5;
 
@@ -54,10 +54,10 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [187.8312, 119.2383];
-font = "Andika:style=Bold";
-// text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
-font_size = letter_height / 0.99013;
+base_size = [119.2823, 67.2047];
+font = "Bree Serif:style=Regular";
+// text() size that makes capitals letter_height tall (cap height = 0.92355 x size).
+font_size = letter_height / 0.92355;
 text_fn = 48;
 // Height of one step when a chamfer is cut as a stack of offsets.
 chamfer_step = 0.1;
@@ -66,29 +66,27 @@ chamfer_step = 0.1;
 overcut = 0.01;
 
 letters = [
-  ["L", -1.7901, 30.1317],  // [character, pen x, baseline y] in base coordinates
-  ["i", 57.1864, 30.1317],
-  ["l", 90.5891, 30.1317],
-  ["y", 123.9919, 30.1317],
+  ["I", 3.6753, 18.474],  // [character, pen x, baseline y] in base coordinates
+  ["j", 29.8825, 18.474],
+  ["a", 47.9943, 18.474],
+  ["y", 83.4264, 18.474],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
 // one piece. [x0, y0, x1, y1] in units of font_size give the stem's centre line
 // ((x0 + x1) / 2) and the bar's vertical span; the bar is bridge_width wide.
 glyph_bridges = [
-  ["i", [0.217, 0.6407, 0.217, 0.8706]],
+  ["j", [0.191, 0.6476, 0.191, 0.8402]],
 ];
 
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 4.1851, 45.3809, 0],
-    [0, 189.1872, 88.4191, 0]
-  ],
-  [ // plate 2
-    [1, 66.2433, 65.3346, 0],
-    [2, 88.727, 63.2467, 0],
-    [3, 119.3007, 93.518, 0]
+    [-1, 12.7648, 94.3977, 0],
+    [0, 135.1223, 121.6023, 0],
+    [1, 161.7164, 118.4744, 0],
+    [2, 177.1825, 130.4443, 0],
+    [3, 212.9793, 131.3465, 0]
   ],
 ];
 

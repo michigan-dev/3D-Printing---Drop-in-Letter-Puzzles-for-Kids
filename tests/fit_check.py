@@ -124,7 +124,7 @@ for meta_path in sorted(p for p in OUT.glob("*.json") if p.name != "summary.json
         for amount, sec_face, inset in ((ct, top_sec, ct - (nominal_top - (zt - 0.05))), (cb, bot_sec, cb - 0.05)):
             if amount > 0 and inset > 0.1:
                 cham_ok &= sec_face.area < letter.area
-                if not sec_face.is_empty:
+                if sec_face.area > 0.01:  # a stroke narrower than twice the chamfer ends in a ridge: a zero-area line
                     cham_ok &= letter.buffer(-(inset - 0.15), join_style="mitre", mitre_limit=1e6).buffer(0.02).contains(sec_face.buffer(-0.02))
         cham_ok &= p["letter_thickness"] - ct <= (zt - zb) <= p["letter_thickness"] + 1e-3
         if not cham_ok:
