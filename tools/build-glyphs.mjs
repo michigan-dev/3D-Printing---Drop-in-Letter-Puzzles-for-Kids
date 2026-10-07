@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Builds lib/glyphs.js: outlines + advance widths for A-Z and a-z, taken from
+// Builds the glyph data files (lib/glyphs.js for Andika, lib/glyphs-serif.js for Bree Serif):
+// outlines + advance widths for A-Z and a-z, taken from
 // OpenSCAD itself (same wasm build, same font, same $fn as the generated .scad),
 // so the JavaScript layout measures exactly the shapes OpenSCAD will cut.
 //
@@ -8,13 +9,15 @@
 // as the stem underneath it, joining the island to the body. It then re-renders
 // every bridged glyph in OpenSCAD and fails if any glyph is still in pieces.
 //
-// Usage: node tools/build-glyphs.mjs
+// Usage: node tools/build-glyphs.mjs [andika] [serif]     (default: all fonts)
 
 import fs from 'node:fs';
 import { loadNodeRunner, parseSvgContours, repoPath } from '../tests/node-runner.mjs';
 
-const FONT_FILE = 'Andika-Bold.ttf';
-const FONT_NAME = 'Andika:style=Bold';
+const SPECS = [
+  { id: 'andika', file: 'Andika-Bold.ttf', name: 'Andika:style=Bold', family: 'Andika', out: 'lib/glyphs.js' },
+  { id: 'serif', file: 'BreeSerif-Regular.ttf', name: 'Bree Serif:style=Regular', family: 'Bree Serif', out: 'lib/glyphs-serif.js' },
+];
 const TEXT_FN = 48; // curve segments; 0.08 mm worst-case deviation at 3 in
 const SIZE = 100; // export size, normalised back to size = 1
 const PITCH = 120; // spacing between glyphs in the verification render (mm)
@@ -112,93 +115,96 @@ function designBridges(ch, shapes) {
       if (slice(body.outer, y).some(([a, b]) => a <= cx && cx <= b)) { top = y; break; }
     }
     if (top >= iy0) throw new Error(`${ch}: island is not above the body; handle by hand`);
-    const stemAt = (y) => slice(body.outer, y).find(([a, b]) => a <= cx && cx <= b);
-    const w0 = stemAt(top - 0.01);
-    const w = w0[1] - w0[0];
-    const [sx0, sx1] = stemAt(top - 0.5 * w); // below any slanted cut at the stem top
-    // Only the gap between stem and dot, plus a little overlap into each. Its centre line is the stem's;
-    // the app draws it BRIDGE_MM wide, whatever the letter size.
-    bridges.push([round(sx0), round(top - 0.3 * w), round(sx1), round(iy0 + 0.3 * (iy1 - iy0))]);
+    // Only the gap between stem and dot, plus a little overlap into each (0.05 em). The bar is centred on
+    // the dot (which sits over the stem, even when the stem top has a flag serif); the app draws it
+    // BRIDGE_MM wide, whatever the letter size. [x0, x1] is just the centre line.
+    bridges.push([round(cx), round(top - 0.05), round(cx), round(iy0 + 0.05)]);
   }
   return bridges;
 }
 const round = (v) => Math.round(v * 1e5) / 1e5;
 const roundArr = (c) => c.map(round);
 
-// ---------- 1. advance widths via textmetrics() ----------
-const metricsScad =
-  `use <fonts/${FONT_FILE}>\n` +
-  [...CHARS].map((c) => `echo("ADV", "${c}", textmetrics("${c}", size=1, font="${FONT_NAME}").advance[0]);`).join('\n') +
-  `\necho("FONT", fontmetrics(size=1, font="${FONT_NAME}"));\nsquare(1);`;
-const m = await run(metricsScad, 'svg', ['--enable=textmetrics']);
-if (!m.ok) throw new Error(m.log.join('\n'));
-const adv = {};
-for (const l of m.log) {
-  const mm = l.match(/ECHO: "ADV", "(.)", ([\d.e-]+)/);
-  if (mm) adv[mm[1]] = parseFloat(mm[2]);
-}
-const fontLine = m.log.find((l) => l.includes('"FONT"'));
-if (!fontLine.includes('family = "Andika"')) throw new Error('Font did not load: ' + fontLine);
-
-// ---------- 2. outlines via SVG export ----------
-// One render per glyph, at the origin: the SVG export keeps 6 significant
-// digits, so coordinates must stay small to keep 1e-5 em precision.
-const perChar = [];
-for (const ch of CHARS) {
-  const o = await run(`use <fonts/${FONT_FILE}>\ntext("${ch}", size=${SIZE}, font="${FONT_NAME}", halign="left", valign="baseline", $fn=${TEXT_FN});`, 'svg');
-  if (!o.ok) throw new Error(o.log.join('\n'));
-  perChar.push(parseSvgContours(dec.decode(o.output)).map((c) => c.map((v) => v / SIZE)));
-}
-
-const glyphs = {};
-const report = [];
-[...CHARS].forEach((ch, i) => {
-  const shapes = toShapes(perChar[i]);
-  const bridges = designBridges(ch, shapes);
-  if (bridges.length) report.push(`${ch}: ${shapes.length} pieces -> ${bridges.length} bridge(s)`);
-  glyphs[ch] = {
-    adv: round(adv[ch]),
-    shapes: shapes.map((s) => ({ outer: roundArr(s.outer), holes: s.holes.map(roundArr) })),
-    bridges,
-  };
-});
-
-// ---------- 3. verify: every bridged glyph is one piece in OpenSCAD ----------
-// The bridge is BRIDGE_MM wide at every size, so check the smallest and largest letters.
-const capOfH = round(bbox(glyphs.H.shapes[0].outer)[3]);
-for (const capMm of [10, 76.2]) {
-  const fs = capMm / capOfH;
-  const verifyScad =
+async function buildFont({ id, file: FONT_FILE, name: FONT_NAME, family, out }) {
+  // ---------- 1. advance widths via textmetrics() ----------
+  const metricsScad =
     `use <fonts/${FONT_FILE}>\n` +
-    [...CHARS].map((c, i) => {
-      const b = glyphs[c].bridges.map(([x0, y0, x1, y1]) => `translate([${((x0 + x1) / 2) * fs - BRIDGE_MM / 2},${y0 * fs}]) square([${BRIDGE_MM},${(y1 - y0) * fs}]);`).join(' ');
-      return `translate([${i * PITCH},0]) union() { text("${c}", size=${fs}, font="${FONT_NAME}", halign="left", valign="baseline", $fn=${TEXT_FN}); ${b} }`;
-    }).join('\n');
-  const v = await run(verifyScad, 'svg');
-  if (!v.ok) throw new Error(v.log.join('\n'));
-  const vc = parseSvgContours(dec.decode(v.output));
-  const outerCount = [...CHARS].map(() => 0);
-  for (const s of toShapes(vc)) outerCount[Math.floor((bbox(s.outer)[0] + PITCH / 4) / PITCH)]++;
-  const broken = [...CHARS].filter((c, i) => outerCount[i] !== 1);
-  if (broken.length) throw new Error(`Still in pieces after bridging at cap height ${capMm} mm: ` + broken.join(' '));
+    [...CHARS].map((c) => `echo("ADV", "${c}", textmetrics("${c}", size=1, font="${FONT_NAME}").advance[0]);`).join('\n') +
+    `\necho("FONT", fontmetrics(size=1, font="${FONT_NAME}"));\nsquare(1);`;
+  const m = await run(metricsScad, 'svg', ['--enable=textmetrics']);
+  if (!m.ok) throw new Error(m.log.join('\n'));
+  const adv = {};
+  for (const l of m.log) {
+    const mm = l.match(/ECHO: "ADV", "(.)", ([\d.e-]+)/);
+    if (mm) adv[mm[1]] = parseFloat(mm[2]);
+  }
+  const fontLine = m.log.find((l) => l.includes('"FONT"'));
+  if (!fontLine.includes(`family = "${family}"`)) throw new Error('Font did not load: ' + fontLine);
+
+  // ---------- 2. outlines via SVG export ----------
+  // One render per glyph, at the origin: the SVG export keeps 6 significant
+  // digits, so coordinates must stay small to keep 1e-5 em precision.
+  const perChar = [];
+  for (const ch of CHARS) {
+    const o = await run(`use <fonts/${FONT_FILE}>\ntext("${ch}", size=${SIZE}, font="${FONT_NAME}", halign="left", valign="baseline", $fn=${TEXT_FN});`, 'svg');
+    if (!o.ok) throw new Error(o.log.join('\n'));
+    perChar.push(parseSvgContours(dec.decode(o.output)).map((c) => c.map((v) => v / SIZE)));
+  }
+
+  const glyphs = {};
+  const report = [];
+  [...CHARS].forEach((ch, i) => {
+    const shapes = toShapes(perChar[i]);
+    const bridges = designBridges(ch, shapes);
+    if (bridges.length) report.push(`${ch}: ${shapes.length} pieces -> ${bridges.length} bridge(s)`);
+    glyphs[ch] = {
+      adv: round(adv[ch]),
+      shapes: shapes.map((s) => ({ outer: roundArr(s.outer), holes: s.holes.map(roundArr) })),
+      bridges,
+    };
+  });
+
+  // ---------- 3. verify: every bridged glyph is one piece in OpenSCAD ----------
+  // The bridge is BRIDGE_MM wide at every size, so check the smallest and largest letters.
+  const capOfH = round(bbox(glyphs.H.shapes[0].outer)[3]);
+  for (const capMm of [10, 76.2]) {
+    const fs = capMm / capOfH;
+    const verifyScad =
+      `use <fonts/${FONT_FILE}>\n` +
+      [...CHARS].map((c, i) => {
+        const b = glyphs[c].bridges.map(([x0, y0, x1, y1]) => `translate([${((x0 + x1) / 2) * fs - BRIDGE_MM / 2},${y0 * fs}]) square([${BRIDGE_MM},${(y1 - y0) * fs}]);`).join(' ');
+        return `translate([${i * PITCH},0]) union() { text("${c}", size=${fs}, font="${FONT_NAME}", halign="left", valign="baseline", $fn=${TEXT_FN}); ${b} }`;
+      }).join('\n');
+    const v = await run(verifyScad, 'svg');
+    if (!v.ok) throw new Error(v.log.join('\n'));
+    const vc = parseSvgContours(dec.decode(v.output));
+    const outerCount = [...CHARS].map(() => 0);
+    for (const s of toShapes(vc)) outerCount[Math.floor((bbox(s.outer)[0] + PITCH / 4) / PITCH)]++;
+    const broken = [...CHARS].filter((c, i) => outerCount[i] !== 1);
+    if (broken.length) throw new Error(`Still in pieces after bridging at cap height ${capMm} mm: ` + broken.join(' '));
+  }
+
+  // Cap height: the flat top of "H" (size = 1).
+  const capPerSize = round(bbox(glyphs.H.shapes[0].outer)[3]);
+
+  const header = `// GENERATED by tools/build-glyphs.mjs from fonts/${FONT_FILE} (${family}) using the
+  // vendored OpenSCAD wasm build. Do not edit by hand: re-run the tool instead.
+  // Units: OpenSCAD text() with size = 1, pen origin at (0, 0) on the baseline.
+  // shapes: outer contours (counter-clockwise) with their holes (clockwise).
+  // bridges: [x0, y0, x1, y1] in em units. The bar's centre line is (x0 + x1) / 2 and its
+  // vertical span y0..y1; the app makes it 5 mm wide (lib/layout.js, lib/scad.js).
+  `;
+  const fileBody = `${header}
+  export const FONT = ${JSON.stringify({ file: FONT_FILE, openscadName: FONT_NAME, cssFamily: family, textFn: TEXT_FN, capPerSize })};
+
+  export const GLYPHS = ${JSON.stringify(glyphs)};
+  `;
+  fs.writeFileSync(repoPath(out), fileBody);
+  console.log(`[${id}] Wrote ${out} (${(fileBody.length / 1024).toFixed(0)} KB), cap height per size = ${capPerSize}`);
+  console.log(`[${id}] Islands found and bridged:\n  ` + (report.join('\n  ') || 'none'));
+  console.log(`[${id}] Verified in OpenSCAD: all 52 glyphs are a single piece with a ${BRIDGE_MM} mm wide bridge, at 10 mm and 76.2 mm cap height.`);
+
 }
 
-// Cap height: the flat top of "H" (size = 1).
-const capPerSize = round(bbox(glyphs.H.shapes[0].outer)[3]);
-
-const header = `// GENERATED by tools/build-glyphs.mjs from fonts/${FONT_FILE} using the
-// vendored OpenSCAD wasm build. Do not edit by hand: re-run the tool instead.
-// Units: OpenSCAD text() with size = 1, pen origin at (0, 0) on the baseline.
-// shapes: outer contours (counter-clockwise) with their holes (clockwise).
-// bridges: [x0, y0, x1, y1] in em units. The bar's centre line is (x0 + x1) / 2 and its
-// vertical span y0..y1; the app makes it 5 mm wide (lib/layout.js, lib/scad.js).
-`;
-const body = `${header}
-export const FONT = ${JSON.stringify({ file: FONT_FILE, openscadName: FONT_NAME, cssFamily: 'Andika', textFn: TEXT_FN, capPerSize })};
-
-export const GLYPHS = ${JSON.stringify(glyphs)};
-`;
-fs.writeFileSync(repoPath('lib/glyphs.js'), body);
-console.log(`Wrote lib/glyphs.js (${(body.length / 1024).toFixed(0)} KB), cap height per size = ${capPerSize}`);
-console.log('Islands found and bridged:\n  ' + (report.join('\n  ') || 'none'));
-console.log(`Verified in OpenSCAD: all 52 glyphs are a single piece with a ${BRIDGE_MM} mm wide bridge, at 10 mm and 76.2 mm cap height.`);
+const wanted = process.argv.slice(2);
+for (const spec of SPECS) if (!wanted.length || wanted.includes(spec.id)) await buildFont(spec);
