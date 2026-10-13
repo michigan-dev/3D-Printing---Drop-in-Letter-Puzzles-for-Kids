@@ -112,11 +112,11 @@
         </fieldset>
 
         <details class="advanced" id="advanced">
-          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 2 · 14 / 5 mm · chamfers</span></summary>
+          <summary><span>Advanced settings</span><span class="adv-summary" id="adv-summary">Fit 1 · 14 / 10 mm · chamfers</span></summary>
           <div class="adv-grid">
             <div class="mini">
               <label for="fit_clearance">Fit clearance (mm per side)</label>
-              <input id="fit_clearance" data-param type="number" inputmode="decimal" min="0.1" max="3" step="0.05" value="2" aria-describedby="note-fit_clearance fit-hint">
+              <input id="fit_clearance" data-param type="number" inputmode="decimal" min="0.1" max="3" step="0.05" value="1" aria-describedby="note-fit_clearance fit-hint">
               <p class="clamp-note" id="note-fit_clearance" hidden></p>
             </div>
             <div class="mini">
@@ -126,7 +126,7 @@
             </div>
             <div class="mini">
               <label for="pocket_depth">Pocket depth (mm)</label>
-              <input id="pocket_depth" data-param type="number" inputmode="decimal" min="2" max="10" step="0.5" value="5" aria-describedby="note-pocket_depth">
+              <input id="pocket_depth" data-param type="number" inputmode="decimal" min="2" max="10" step="0.5" value="10" aria-describedby="note-pocket_depth">
               <p class="clamp-note" id="note-pocket_depth" hidden></p>
             </div>
             <div class="mini">
@@ -145,7 +145,7 @@
               <p class="clamp-note" id="note-letter_chamfer" hidden></p>
             </div>
           </div>
-          <p class="hint" id="fit-hint">Default 2 mm: roomy, easy for small hands. For a snug fit use 0.2 · slip fit 0.3 · loose 0.4 mm</p>
+          <p class="hint" id="fit-hint">Default 1 mm: easy for small hands. For a snug fit use 0.2 · slip fit 0.3 · loose 0.4 mm</p>
           <button type="button" class="link-btn" id="reset-advanced">Reset defaults</button>
         </details>
 
@@ -185,7 +185,7 @@
             </div>
           </div>
           <div class="preview-foot">
-            <span id="foot-left">Letters seated in the base · 9 mm stand proud for small hands</span>
+            <span id="foot-left">Letters seated in the base · 4 mm stand proud for small hands</span>
             <span class="foot-right">Drag to rotate · scroll to zoom</span>
           </div>
         </div>
