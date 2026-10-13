@@ -5,7 +5,7 @@
 // Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
 // website's fonts/ folder), or install the font on your computer.
 //
-// Base 695.1173 x 96.0142 x 8 mm (27.4 x 3.8 in), 1 plate(s) on Custom bed (716 x 400 mm).
+// Base 690.4633 x 94.0129 x 13 mm (27.2 x 3.7 in), 1 plate(s) on Custom bed (711 x 400 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
@@ -20,7 +20,7 @@ letter_index = 0;
 
 /* [Fit] */
 // Gap per side between letter and pocket: 0.2 snug, 0.3 default, 0.4 loose.
-fit_clearance = 2;
+fit_clearance = 1;
 // 45 degree chamfer around the top of each pocket, so letters drop in easily.
 lead_in = 0.5;
 lead_in_steps = 5;
@@ -29,7 +29,7 @@ lead_in_steps = 5;
 // Cap height of the capital letters (mm).
 letter_height = 76.2;
 letter_thickness = 14;
-pocket_depth = 5;
+pocket_depth = 10;
 // Solid floor under the pockets.
 base_floor = 3;
 // Vertical corner cut, 45 degrees in plan view.
@@ -54,7 +54,7 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [695.1173, 96.0142];
+base_size = [690.4633, 94.0129];
 font = "Andika:style=Bold";
 // text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
 font_size = letter_height / 0.99013;
@@ -66,17 +66,17 @@ chamfer_step = 0.1;
 overcut = 0.01;
 
 letters = [
-  ["B", -1.8127, 6.9077],  // [character, pen x, baseline y] in base coordinates
-  ["a", 70.4724, 6.9077],
-  ["r", 136.025, 6.9077],
-  ["t", 193.6099, 6.9077],
-  ["h", 239.7995, 6.9077],
-  ["o", 304.2562, 6.9077],
-  ["l", 364.7988, 6.9077],
-  ["o", 398.2015, 6.9077],
-  ["m", 458.7441, 6.9077],
-  ["e", 550.6015, 6.9077],
-  ["w", 608.5344, 6.9077],
+  ["B", -2.9793, 5.9064],  // [character, pen x, baseline y] in base coordinates
+  ["a", 69.3058, 5.9064],
+  ["r", 134.8585, 5.9064],
+  ["t", 190.3033, 5.9064],
+  ["h", 236.4929, 5.9064],
+  ["o", 300.9496, 5.9064],
+  ["l", 361.4922, 5.9064],
+  ["o", 394.895, 5.9064],
+  ["m", 455.4375, 5.9064],
+  ["e", 547.295, 5.9064],
+  ["w", 605.2278, 5.9064],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
@@ -89,18 +89,18 @@ glyph_bridges = [
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 10.4413, 196.2462, 0],
-    [0, 2.6122, 114.5244, 0],
-    [1, 67.3714, 136.9666, 0],
-    [2, 128.5295, 136.9666, 0],
-    [3, 183.3724, 122.3535, 0],
-    [4, 224.9067, 107.7396, 0],
-    [5, 283.1419, 136.9666, 0],
-    [6, 335.636, 107.7396, 0],
-    [7, 360.9903, 136.9666, 0],
-    [8, 415.8332, 136.9666, 0],
-    [9, 500.4248, 136.9666, 0],
-    [10, 556.5721, 138.0109, 0]
+    [-1, 10.2684, 197.2468, 0],
+    [0, 2.4393, 115.525, 0],
+    [1, 67.1984, 137.9672, 0],
+    [2, 128.3566, 137.9672, 0],
+    [3, 183.1995, 123.3541, 0],
+    [4, 224.7337, 108.7403, 0],
+    [5, 282.969, 137.9672, 0],
+    [6, 335.463, 108.7403, 0],
+    [7, 360.8173, 137.9672, 0],
+    [8, 415.6602, 137.9672, 0],
+    [9, 500.2518, 137.9672, 0],
+    [10, 556.3991, 139.0115, 0]
   ],
 ];
 

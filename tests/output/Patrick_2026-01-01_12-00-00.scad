@@ -5,7 +5,7 @@
 // Keep BreeSerif-Regular.ttf in a "fonts" folder next to this file (it is in the
 // website's fonts/ folder), or install the font on your computer.
 //
-// Base 121.3335 x 27.3505 x 8 mm (4.8 x 1.1 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
+// Base 106.3484 x 25.3495 x 13 mm (4.2 x 1.0 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
@@ -20,7 +20,7 @@ letter_index = 0;
 
 /* [Fit] */
 // Gap per side between letter and pocket: 0.2 snug, 0.3 default, 0.4 loose.
-fit_clearance = 2;
+fit_clearance = 1;
 // 45 degree chamfer around the top of each pocket, so letters drop in easily.
 lead_in = 0.5;
 lead_in_steps = 5;
@@ -29,7 +29,7 @@ lead_in_steps = 5;
 // Cap height of the capital letters (mm).
 letter_height = 14;
 letter_thickness = 14;
-pocket_depth = 5;
+pocket_depth = 10;
 // Solid floor under the pockets.
 base_floor = 3;
 // Vertical corner cut, 45 degrees in plan view.
@@ -54,7 +54,7 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [121.3335, 27.3505];
+base_size = [106.3484, 25.3495];
 font = "Bree Serif:style=Regular";
 // text() size that makes capitals letter_height tall (cap height = 0.92355 x size).
 font_size = letter_height / 0.92355;
@@ -66,13 +66,13 @@ chamfer_step = 0.1;
 overcut = 0.01;
 
 letters = [
-  ["P", 4.9263, 6.653],  // [character, pen x, baseline y] in base coordinates
-  ["a", 23.3985, 6.653],
-  ["t", 41.6593, 6.653],
-  ["r", 57.381, 6.653],
-  ["i", 74.0228, 6.653],
-  ["c", 86.9898, 6.653],
-  ["k", 104.344, 6.653],
+  ["P", 3.9263, 5.6531],  // [character, pen x, baseline y] in base coordinates
+  ["a", 20.3558, 5.6531],
+  ["t", 36.3273, 5.6531],
+  ["r", 49.8175, 5.6531],
+  ["i", 64.4589, 5.6531],
+  ["c", 75.3085, 5.6531],
+  ["k", 90.3589, 5.6531],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
@@ -85,14 +85,14 @@ glyph_bridges = [
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 18.7886, 114.3248, 0],
-    [0, 144.4484, 127.6752, 0],
-    [1, 160.3959, 130.7699, 0],
-    [2, 176.3432, 128.8541, 0],
-    [3, 188.5852, 130.7699, 0],
-    [4, 202.2219, 126.5805, 0],
-    [5, 212.2324, 130.7699, 0],
-    [6, 225.8219, 126.6647, 0]
+    [-1, 26.2811, 115.3253, 0],
+    [0, 136.9559, 126.6747, 0],
+    [1, 152.9033, 129.7694, 0],
+    [2, 168.8506, 127.8536, 0],
+    [3, 181.0926, 129.7694, 0],
+    [4, 194.7294, 125.58, 0],
+    [5, 204.7399, 129.7694, 0],
+    [6, 218.3294, 125.6642, 0]
   ],
 ];
 

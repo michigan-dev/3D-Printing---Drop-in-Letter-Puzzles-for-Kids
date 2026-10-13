@@ -93,13 +93,13 @@ test('edge chamfer is clamped below side_margin - 0.8 mm, with a note', () => {
   assert.equal(resolveParams({ edge_chamfer: 1 }).notes.edge_chamfer, undefined);
 });
 
-test('default advanced settings: 2 / 14 / 5 / 4 / 1.1 / 2 mm, none of them clamped', () => {
+test('default advanced settings: 1 / 14 / 10 / 4 / 1.1 / 2 mm, none of them clamped', () => {
   const r = resolveParams({ letter_height: 14 });
   assert.deepEqual(
     ['fit_clearance', 'letter_thickness', 'pocket_depth', 'corner_chamfer', 'edge_chamfer', 'letter_chamfer'].map((k) => r.params[k]),
-    [2, 14, 5, 4, 1.1, 2]);
+    [1, 14, 10, 4, 1.1, 2]);
   assert.deepEqual(r.notes, {});
-  assert.equal(r.params.base_thickness, 8);
+  assert.equal(r.params.base_thickness, 13); // pocket 10 + floor 3
 });
 
 test('letter chamfer: default 2 mm; capped at 15% of the cap height with a note when the letters are tiny', () => {
@@ -126,9 +126,9 @@ test('vertical-corner chamfer follows the letter chamfer but stays under 3.5% of
   assert.equal(resolveParams({ letter_height: 76.2, letter_chamfer: 0 }).params.letter_corner_chamfer, 0);
 });
 
-test('fit clearance defaults to 2 mm per side', () => {
-  assert.equal(DEFAULTS.fit_clearance, 2);
-  assert.equal(resolveParams().params.fit_clearance, 2);
+test('fit clearance defaults to 1 mm per side', () => {
+  assert.equal(DEFAULTS.fit_clearance, 1);
+  assert.equal(resolveParams().params.fit_clearance, 1);
   assert.equal(resolveParams({ fit_clearance: 0.3 }).params.fit_clearance, 0.3);
 });
 

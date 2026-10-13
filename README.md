@@ -65,9 +65,9 @@ All dimensions are in mm. Names match the generated `.scad`.
 |---|---|---|
 | `letter_height` | 14 | Slider 10–76.2 mm (0.4–3 in), step 0.2 mm. Cap height of capitals; lowercase letters keep the font's proportions. |
 | `letter_thickness` | 14 | Advanced, 4–15. Always at least `pocket_depth + 1`. |
-| `pocket_depth` | 5 | Advanced, 2–10. Letters stand `letter_thickness − pocket_depth` (9 mm) proud. |
-| `base_floor` | 3 | Solid floor under the pockets, so `base_thickness` = 8. |
-| `fit_clearance` | 2 | Advanced, 0.1–3, per side. Pocket = letter outline `offset(delta = fit_clearance)`. The default 2 mm is roomy, easy for small hands; use 0.2 for snug, 0.3 slip fit, 0.4 loose. With 2 mm, a counter (hole in a, e, o…) narrower than 4 mm closes up, so those pockets have no inner post. |
+| `pocket_depth` | 10 | Advanced, 2–10. Letters stand `letter_thickness − pocket_depth` (4 mm) proud. |
+| `base_floor` | 3 | Solid floor under the pockets, so `base_thickness` = 13. |
+| `fit_clearance` | 1 | Advanced, 0.1–3, per side. Pocket = letter outline `offset(delta = fit_clearance)`. The default 1 mm is easy for small hands; use 0.2 for snug, 0.3 slip fit, 0.4 loose. A counter (hole in a, e, o…) narrower than twice the clearance closes up, so that pocket has no inner post. |
 | `letter_chamfer` | 2 | Advanced, 0–2 (and at most 15% of the letter height). 45° chamfer around the top face of each letter. On strokes narrower than twice the chamfer (14 mm letters have ~2.2 mm strokes) the stroke ends in a ridge a little below the nominal top. |
 | `letter_corner_chamfer` | `letter_chamfer`, at most 3.5% of the letter height (0.49 at 14 mm) | 45° chamfer on the vertical corners of each letter, in plan view. Limited because it is cut by eroding and re-growing the outline, which deletes strokes thinner than twice the chamfer (1 mm at 14 mm would split letters; measured). |
 | `letter_bottom_chamfer` | 0.4 | 45° chamfer around the bottom face of each letter. |

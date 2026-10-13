@@ -2,168 +2,168 @@
   {
     "label": "Mia (First capital, 50.8 mm / 2.00 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 2344,
-      "base": 342,
-      "plates": 27,
-      "total": 2884
+      "letters": 2748,
+      "base": 352,
+      "plates": 36,
+      "total": 3315
     },
     "base": {
-      "width": 134.8202594345501,
-      "depth": 66.53470422722198,
-      "thickness": 8
+      "width": 132.30696300926007,
+      "depth": 64.53431452223403,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Mia_2026-01-01_12-00-00-base-only.stl, Mia_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 89.0 cm3, 2.7 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 113.1 cm3, 2.5 s)."
     ]
   },
   {
     "label": "EMMA (ALL CAPS, 76.2 mm / 3.00 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 971,
-      "base": 209,
-      "plates": 19,
-      "total": 1354
+      "letters": 904,
+      "base": 210,
+      "plates": 18,
+      "total": 1291
     },
     "base": {
-      "width": 335.4683639262794,
-      "depth": 89.506,
-      "thickness": 8
+      "width": 332.7782318529852,
+      "depth": 87.506,
+      "thickness": 13
     },
     "notes": [
-      "On Bambu A1 the app blocks this build: status \"too-big\", offers 64 mm instead.",
-      "Rendered on a custom 356 x 400 mm bed to test the geometry and timing.",
+      "On Bambu A1 the app blocks this build: status \"too-big\", offers 64.8 mm instead.",
+      "Rendered on a custom 353 x 400 mm bed to test the geometry and timing.",
       "two-colour downloads: EMMA_2026-01-01_12-00-00-base-only.stl, EMMA_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 321.8 cm3, 1.0 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 400.8 cm3, 1.0 s)."
     ]
   },
   {
     "label": "Jiggy (First capital, 63.5 mm / 2.50 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 3354,
-      "base": 484,
+      "letters": 3167,
+      "base": 461,
       "plates": 35,
-      "total": 3937
+      "total": 3783
     },
     "base": {
-      "width": 236.64628513909224,
-      "depth": 99.49498608472886,
-      "thickness": 8
+      "width": 231.95149337042926,
+      "depth": 97.49323497242135,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Jiggy_2026-01-01_12-00-00-base-only.stl, Jiggy_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 230.7 cm3, 3.9 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 303.6 cm3, 4.1 s)."
     ]
   },
   {
     "label": "Bartholomew (First capital, 76.2 mm / 3.00 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 7238,
-      "base": 942,
-      "plates": 56,
-      "total": 8333
+      "letters": 7317,
+      "base": 876,
+      "plates": 58,
+      "total": 8381
     },
     "base": {
-      "width": 695.1173426517256,
-      "depth": 96.01421427249964,
-      "thickness": 8
+      "width": 690.4632681670599,
+      "depth": 94.01293202567143,
+      "thickness": 13
     },
     "notes": [
-      "On Bambu A1 the app blocks this build: status \"too-big\", offers 30 mm instead.",
-      "Rendered on a custom 716 x 400 mm bed to test the geometry and timing.",
+      "On Bambu A1 the app blocks this build: status \"too-big\", offers 33 mm instead.",
+      "Rendered on a custom 711 x 400 mm bed to test the geometry and timing.",
       "two-colour downloads: Bartholomew_2026-01-01_12-00-00-base-only.stl, Bartholomew_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 681.3 cm3, 8.6 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 885.3 cm3, 8.6 s)."
     ]
   },
   {
     "label": "Lily (First capital, 76.2 mm / 3.00 in, Andika, Prusa MK4)",
     "timings": {
-      "letters": 2031,
-      "base": 292,
-      "plates": 13,
-      "total": 2493
+      "letters": 1957,
+      "base": 250,
+      "plates": 12,
+      "total": 2430
     },
     "base": {
-      "width": 187.83123517789087,
-      "depth": 119.23825280842247,
-      "thickness": 8
+      "width": 185.1153078201964,
+      "depth": 117.23760915427471,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Lily_2026-01-01_12-00-00-base-only.stl, Lily_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 160.6 cm3, 0.4 s).",
-      ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 57.2 cm3, 1.5 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 249.9 cm3, 1.1 s).",
+      ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 42.1 cm3, 0.7 s)."
     ]
   },
   {
     "label": "Ellie (First capital, 14 mm / 0.55 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 1310,
-      "base": 237,
-      "plates": 7,
-      "total": 1618
+      "letters": 1290,
+      "base": 248,
+      "plates": 8,
+      "total": 1628
     },
     "base": {
-      "width": 72.55847825984712,
-      "depth": 27.595633990691958,
-      "thickness": 8
+      "width": 61.96159894425255,
+      "depth": 25.595410426835162,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Ellie_2026-01-01_12-00-00-base-only.stl, Ellie_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 15.0 cm3, 1.3 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 18.2 cm3, 1.0 s)."
     ]
   },
   {
     "label": "Charlotte (First capital, 40 mm / 1.57 in, Andika, Bambu A1)",
     "timings": {
-      "letters": 4584,
-      "base": 757,
-      "plates": 40,
-      "total": 5451
+      "letters": 4306,
+      "base": 650,
+      "plates": 39,
+      "total": 5063
     },
     "base": {
-      "width": 289.9783619747223,
-      "depth": 55.723420134356154,
-      "thickness": 8
+      "width": 273.37217728649006,
+      "depth": 53.722137887527936,
+      "thickness": 13
     },
     "notes": [
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 94.4 cm3, 0.6 s).",
-      ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 55.2 cm3, 4.6 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 135.4 cm3, 0.7 s).",
+      ".scad part=\"plate_2\" rendered directly matches the plate STL (volume 55.2 cm3, 4.7 s)."
     ]
   },
   {
     "label": "Patrick (First capital, 14 mm / 0.55 in, Bree Serif, Bambu A1)",
     "timings": {
-      "letters": 2025,
-      "base": 270,
-      "plates": 12,
-      "total": 2413
+      "letters": 1883,
+      "base": 348,
+      "plates": 13,
+      "total": 2357
     },
     "base": {
-      "width": 121.33345126951386,
-      "depth": 27.35045504441202,
-      "thickness": 8
+      "width": 106.34839641602063,
+      "depth": 25.34945885307783,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Patrick_2026-01-01_12-00-00-base-only.stl, Patrick_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 25.0 cm3, 1.8 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 31.3 cm3, 1.7 s)."
     ]
   },
   {
     "label": "Ijay (First capital, 40 mm / 1.57 in, Bree Serif, Bambu A1)",
     "timings": {
-      "letters": 1944,
-      "base": 335,
-      "plates": 17,
-      "total": 2365
+      "letters": 1940,
+      "base": 283,
+      "plates": 13,
+      "total": 2295
     },
     "base": {
-      "width": 119.282257718688,
-      "depth": 67.20465675547153,
-      "thickness": 8
+      "width": 112.06185309934254,
+      "depth": 65.20279405328291,
+      "thickness": 13
     },
     "notes": [
       "two-colour downloads: Ijay_2026-01-01_12-00-00-base-only.stl, Ijay_2026-01-01_12-00-00-letters-only.stl",
-      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 73.5 cm3, 2.1 s)."
+      ".scad part=\"plate_1\" rendered directly matches the plate STL (volume 94.1 cm3, 2.1 s)."
     ]
   }
 ]

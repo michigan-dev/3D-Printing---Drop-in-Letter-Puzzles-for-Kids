@@ -22,7 +22,7 @@ test('job is ready and the .scad is generated', () => {
 test('.scad contains the expected parameter values', () => {
   assert.equal(value('letter_height'), '63.5');
   assert.equal(value('letter_thickness'), '14');
-  assert.equal(value('pocket_depth'), '5');
+  assert.equal(value('pocket_depth'), '10');
   assert.equal(value('base_floor'), '3');
   assert.equal(value('base_thickness'), 'pocket_depth + base_floor');
   assert.equal(value('fit_clearance'), '0.25');
@@ -35,10 +35,11 @@ test('.scad contains the expected parameter values', () => {
   assert.match(value('font_size'), /^letter_height \/ 0\.99\d+$/);
 });
 
-test('.scad has 14 mm height, 2 mm clearance, letter chamfers (faces and vertical corners) and a 5 mm bridge', () => {
+test('.scad has 14 mm height, 1 mm clearance, 10 mm pocket depth, letter chamfers (faces and vertical corners) and a 5 mm bridge', () => {
   const def = prepareJob({ rawName: 'Mia', caseStyle: 'first', printer: 'a1' }).scad;
   assert.match(def, /^letter_height = 14;/m);
-  assert.match(def, /^fit_clearance = 2;/m);
+  assert.match(def, /^fit_clearance = 1;/m);
+  assert.match(def, /^pocket_depth = 10;/m);
   assert.match(def, /^letter_chamfer = 2;/m);
   assert.match(def, /^letter_thickness = 14;/m);
   assert.match(def, /^edge_chamfer = 1\.1;/m);

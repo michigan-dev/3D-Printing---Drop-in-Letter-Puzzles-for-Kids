@@ -5,7 +5,7 @@
 // Keep Andika-Bold.ttf in a "fonts" folder next to this file (it is in the
 // website's fonts/ folder), or install the font on your computer.
 //
-// Base 134.8203 x 66.5347 x 8 mm (5.3 x 2.6 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
+// Base 132.307 x 64.5343 x 13 mm (5.2 x 2.5 in), 1 plate(s) on Bambu A1 (256 x 256 mm).
 // The letter positions and base size below were computed for these exact
 // settings. Small changes to fit_clearance, thicknesses or chamfers are safe;
 // for a different name or letter height, use the website again.
@@ -20,7 +20,7 @@ letter_index = 0;
 
 /* [Fit] */
 // Gap per side between letter and pocket: 0.2 snug, 0.3 default, 0.4 loose.
-fit_clearance = 2;
+fit_clearance = 1;
 // 45 degree chamfer around the top of each pocket, so letters drop in easily.
 lead_in = 0.5;
 lead_in_steps = 5;
@@ -29,7 +29,7 @@ lead_in_steps = 5;
 // Cap height of the capital letters (mm).
 letter_height = 50.8;
 letter_thickness = 14;
-pocket_depth = 5;
+pocket_depth = 10;
 // Solid floor under the pockets.
 base_floor = 3;
 // Vertical corner cut, 45 degrees in plan view.
@@ -54,7 +54,7 @@ bridge_width = 5;
 base_thickness = pocket_depth + base_floor;
 // Pocket openings sit side_margin = 2 mm from the edge of the base's flat top face,
 // with at least letter_gap = 3 mm of wall between neighbouring pockets.
-base_size = [134.8203, 66.5347];
+base_size = [132.307, 64.5343];
 font = "Andika:style=Bold";
 // text() size that makes capitals letter_height tall (cap height = 0.99013 x size).
 font_size = letter_height / 0.99013;
@@ -66,9 +66,9 @@ chamfer_step = 0.1;
 overcut = 0.01;
 
 letters = [
-  ["M", 0.7264, 6.6528],  // [character, pen x, baseline y] in base coordinates
-  ["i", 65.2698, 6.6528],
-  ["a", 87.5383, 6.6528],
+  ["M", -0.4119, 5.6536],  // [character, pen x, baseline y] in base coordinates
+  ["i", 64.1315, 5.6536],
+  ["a", 86.4, 5.6536],
 ];
 
 // Bridges that join the dot of i and j to the stem, so each letter prints as
@@ -81,10 +81,10 @@ glyph_bridges = [
 // Build plates: [part, x, y, rotation]; part -1 is the base, otherwise a letter index.
 plates = [
   [ // plate 1
-    [-1, 22.8833, 115.7607, 0],
-    [0, 157.4842, 131.4954, 0],
-    [1, 215.8936, 128.0163, 0],
-    [2, 19.4037, 74.5743, 0]
+    [-1, 3.0075, 95.7328, 0],
+    [0, 135.0951, 109.4672, 0],
+    [1, 193.5046, 105.9881, 0],
+    [2, 212.248, 124.0808, 0]
   ],
 ];
 
